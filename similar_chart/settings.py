@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "main", #アプリケーションの登録
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ WSGI_APPLICATION = 'similar_chart.wsgi.application'
 
 DATABASES={
     "default":{
-        "ENGINE":"django.db.backends.postgresql",
+        "ENGINE":"django.db.backends.postgresql_psycopg2",
         "NAME":"similar_chart",
         "USER":"postgres",
         "PASSWORD":"xe7z76fr",
