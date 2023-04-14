@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Market(models.Model):
     """
     取引所のデータベース
@@ -26,15 +27,14 @@ class OHLC(models.Model):
     仮想通貨のローソク足
     """
 
-    market=models.ForeignKey(Market,on_delete=models.CASCADE)
-    pair=models.ForeignKey(Pair,on_delete=models.CASCADE)
+    pair=models.ForeignKey(Pair,on_delete=models.CASCADE) #取引所と通貨ペアの情報
 
     is_train_data=models.BooleanField() #学習時に使ったデータかどうか
     open=models.IntegerField()
     high=models.IntegerField()
     low=models.IntegerField()
     close=models.IntegerField()
-    datetime=models.DateTimeField()
+    date=models.DateField(null=True)
 
 
 

@@ -5,7 +5,7 @@ from math import ceil
 import time
 
 
-def get_chart(market:str,pair:str,before:datetime,after:datetime,periods=60*60*12)->pd.DataFrame:
+def get_chart(market:str,pair:str,before:datetime,after:datetime,periods=60*60*24)->pd.DataFrame:
     """
     指定した取引所における通貨ペアの過去チャートを取ってくる関数
 
@@ -48,12 +48,12 @@ def get_chart(market:str,pair:str,before:datetime,after:datetime,periods=60*60*1
 
 
 if __name__=="__main__":
-    before=datetime.now()
+    before=datetime.now()-timedelta(hours=19)
     delta=timedelta(days=365*9)
     after=before-delta
     chart=get_chart(
-        market="bitflyer",pair="btcjpy",
-        before=before,after=after,periods=60*60*12
+        market="binance",pair="btcusdt",
+        before=before,after=after,periods=60*60*24
         )
     
-    # print(chart)
+    print(chart)
