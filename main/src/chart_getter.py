@@ -24,7 +24,7 @@ def get_chart(market:str,pair:str,before:datetime,after:datetime,periods=60*60*1
     data_num=1500 #1回のrequestで取るデータ数
     data_all=(before.timestamp()-after.timestamp())/periods #取得する全データ数
     request_num=ceil(data_all/data_num) #requestする回数
-    for n in range(request_num):
+    for n in range(request_num): #一度に大量のデータは取得できないので,分割して取り出す
 
         before_n=before-timedelta(seconds=periods*data_num*n)
         after_n=before_n-timedelta(seconds=periods*data_num) if data_all>data_num else after
@@ -43,16 +43,17 @@ def get_chart(market:str,pair:str,before:datetime,after:datetime,periods=60*60*1
 
     chart["datetime"]=chart["datetime"].apply(datetime.fromtimestamp) #timestampから日時に変換(日本時間)
     chart=chart.drop(labels=["volume","quote_volume"],axis=1)
+    
     return chart
 
 
 if __name__=="__main__":
     before=datetime.now()
-    delta=timedelta(days=365*10)
+    delta=timedelta(days=365*9)
     after=before-delta
     chart=get_chart(
         market="bitflyer",pair="btcjpy",
         before=before,after=after,periods=60*60*12
         )
     
-    # chart.to_csv("chart.csv")
+    # print(chart)

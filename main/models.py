@@ -15,14 +15,15 @@ class Pair(models.Model):
     pair=models.CharField(max_length=50)
 
 
-class CurrentOHLC(models.Model):
+class OHLC(models.Model):
     """
-    今のohlc
+    仮想通貨のローソク足
     """
 
     market=models.ForeignKey(Market,on_delete=models.CASCADE)
     pair=models.ForeignKey(Pair,on_delete=models.CASCADE)
 
+    is_train_data=models.BooleanField() #学習時に使ったデータかどうか
     open=models.IntegerField()
     high=models.IntegerField()
     low=models.IntegerField()
@@ -30,16 +31,4 @@ class CurrentOHLC(models.Model):
     datetime=models.DateTimeField()
 
 
-class TrainedOHLC(models.Model):
-    """
-    学習したohlc
-    """
 
-    market=models.ForeignKey(Market,on_delete=models.CASCADE)
-    pair=models.ForeignKey(Pair,on_delete=models.CASCADE)
-
-    open=models.IntegerField()
-    high=models.IntegerField()
-    low=models.IntegerField()
-    close=models.IntegerField()
-    datetime=models.DateTimeField()
