@@ -1,4 +1,7 @@
 from django import forms   
+from datetime import datetime
+
+NOW=datetime.now().date() #現在の日にち
 
 class Form (forms.Form):
 
@@ -11,7 +14,7 @@ class Form (forms.Form):
         ]
     pair=forms.ChoiceField(choices=pair_list,label="pair",initial=pair_list[0])
     date=forms.DateField(
-        initial="2000-01-01",
+        initial=str(NOW),
         widget=forms.NumberInput(attrs={"type":"date"}) #入力をカレンダーに設定
     )
 
