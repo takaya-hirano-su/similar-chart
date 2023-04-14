@@ -6,6 +6,9 @@ class Market(models.Model):
     """
     market=models.CharField(max_length=50)
 
+    def __str__(self):
+        return f"<Market:id{self.id},{self.market}>"
+
 
 class Pair(models.Model):
     """
@@ -13,6 +16,9 @@ class Pair(models.Model):
     """
     market=models.ForeignKey(Market,on_delete=models.CASCADE) #CASCADE:関連づけられたオブジェクトと一緒に削除される
     pair=models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"<Pair:id:{self.id}, market:{self.market.market}, pair:{self.pair}>"
 
 
 class OHLC(models.Model):
