@@ -1,0 +1,23 @@
+{% load static %}
+
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Similar Chart</title>
+
+</head>
+<body>
+    <h1>Similar Chart</h1>
+    <table>
+        <form action="{% url 'index' %}" method="post" name="mainform">
+            {% csrf_token %}
+            {{forms.as_table}}
+        </form>
+    </table>
+
+    <p>{{msg}}</p>
+
+    <script src="{% static 'main/js/script.js' %}"></script>
+</body>
+</html>
