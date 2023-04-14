@@ -36,5 +36,8 @@ class OHLC(models.Model):
     close=models.IntegerField()
     date=models.DateField(null=True)
 
+    def __str__(self):
+        return f"<ohlc market:{self.pair.market.market}, pair:{self.pair.pair} ({self.date})>"
+
 
 
