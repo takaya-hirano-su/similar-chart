@@ -41,6 +41,16 @@ function drawChart(ctx,canvas,data){
                 label:"close",
                 lineTension:0.0
             }]
+        },
+        options:{
+            scales:{
+                xAxes:[{
+                    ticks:{
+                        autoSkip:true,
+                        maxTicksLimit:20,
+                    },
+                }]
+            }
         }
     });
 }
