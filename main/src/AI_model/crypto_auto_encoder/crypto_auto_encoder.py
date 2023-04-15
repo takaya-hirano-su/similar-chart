@@ -1,7 +1,9 @@
 import torch
 from torch import Tensor,nn
 from omegaconf import DictConfig
+import numpy as np
 
+from utils import make_batch,normalize
 from .decoder import Decoder
 from .encoder import Encoder
 
@@ -15,10 +17,11 @@ class CryptAutoEncoder(nn.Module):
         :param DictConfig cfg: パラメータが入った辞書
 
         ===以下はcfgのパラメタ===
+        
         :param Dictconfig encoder: Encoderのパラメータが入った辞書
         :param DictConfig decoder: Decoderのパラメータが入った辞書
         """
-
+        super(CryptAutoEncoder,self).__init__()
         self.encoder=Encoder(cfg.encoder)
         self.decoder=Decoder(cfg.decoder)
 
@@ -65,3 +68,30 @@ class CryptAutoEncoder(nn.Module):
         :type z :Tensor[batchsize x timesequence x hidden_size]
         """
         return self.encoder(x)
+    
+    @torch.no_grad()
+    def get_similar_chart(self,chart:np.ndarray,chart_past:np.ndarray):
+        """
+        似たチャートを選ぶ関数
+
+        :param chart: 選択したチャート. 次元はohlcの4つ
+        :type chart: numpy.ndarray [time_sequence x 4]
+        :param chart_past: 過去の時系列チャート. 次元はohlcの4つ
+        :type chat_past: numpy.ndarray [time_sequence x 4]
+        """
+
+        chart=chart[np.newaxis,:,:] #バッチ方向に次元追加
+        chart=normalize(chart) #標準化
+        chart_past=make_batch(values=chart_past)
+        chart_past=normalize(chart_past)
+
+        z=self.encode(Tensor(chart)).to("cpu").detach().numpy() #特徴量の抽出
+        z_past=self.encode(Tensor(chart_past)).to("cpu").detach().numpy() #特徴量の抽出
+
+        loss=(z_past[:,:,:]-z[:,:,:])**2 #2乗誤差を計算
+        loss=np.mean(loss,axis=-1) #特徴次元方向に平均
+        loss=np.mean(loss,axis=-1) #時間方向に平均
+
+        best_idx=np.argmin(loss)
+
+        return chart_past[best_idx]

@@ -51,6 +51,7 @@ class IndexView(TemplateView):
             fieldnames=["pair","is_train_data","open","high","low","close","date"]
             )        
         ohlc["date"]=ohlc["date"].astype(str) #時間を文字列に変換.datetimeのままjsonにするとunixになってしまう.
+        print(f"ohlc.shape:{ohlc.shape}")
         ##
         
         params={
@@ -73,7 +74,7 @@ class IndexView(TemplateView):
         ##date-DAYS(72日)~dateの範囲における通貨ペアを取得
         date=datetime.strptime(date,"%Y-%m-%d")
         before=datetime(year=date.year,month=date.month,day=date.day,hour=9)
-        after=before-timedelta(days=DAYS)
+        after=before-timedelta(days=DAYS-1)
         ohlc=OHLC.objects\
             .filter(pair=pair)\
             .filter(date__gte=after.date())\
