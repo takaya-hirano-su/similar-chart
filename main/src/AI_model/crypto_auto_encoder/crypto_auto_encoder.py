@@ -1,3 +1,11 @@
+from pathlib import Path
+PARENT=str(Path(__file__).parent)
+UTILS_PATH=str(Path(__file__).parent.parent)
+PARAMS_PATH=str(Path(__file__).parent.parent.parent)
+import sys
+sys.path.append(PARAMS_PATH)
+sys.path.append(UTILS_PATH)
+
 import torch
 from torch import Tensor,nn
 from omegaconf import DictConfig
@@ -123,7 +131,7 @@ class CryptAutoEncoder(nn.Module):
                 continue
                     
 
-            similar_charts.append(similar_chart)
+            similar_charts.append(similar_chart.reset_index())
 
             val=similar_chart.loc[:,columns].values
             similar_chart_scaled=similar_chart.copy(deep=True)
@@ -132,7 +140,7 @@ class CryptAutoEncoder(nn.Module):
 
             dt=chart["date"].iloc[0]-similar_chart["date"].iloc[0]
             similar_chart_scaled["date"]=similar_chart_scaled["date"].values+dt
-            similar_charts_scaled.append(similar_chart_scaled)
+            similar_charts_scaled.append(similar_chart_scaled.reset_index())
 
             
         ##

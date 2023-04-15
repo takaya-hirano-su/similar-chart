@@ -17,30 +17,17 @@ form_date.addEventListener("change",function(){
 
 
 //START キャンバスにチャートを描画
-function drawChart(ctx,canvas,data){
+function drawChart(ctx,canvas,labels,datasets){
     if(canvas){
         ctx.destroy();
     }
 
-    var data_size=(Object.keys(data["pair"]).length);
-    var dates=[];
-    var values=[];
-    for(var i=0;i<data_size;i++){
-        dates.push(data["date"][i]);
-        values.push(data["close"][i]);
-    }
-
+  
     var canvas=new Chart(ctx,{
         type:"line",
         data:{
-            labels:dates,
-            datasets:[{
-                data:values,
-                type:"line",
-                fill:false,
-                label:"close",
-                lineTension:0.0
-            }]
+            labels:labels,
+            datasets:datasets,
         },
         options:{
             scales:{
@@ -55,3 +42,21 @@ function drawChart(ctx,canvas,data){
     });
 }
 //END
+
+
+function getColor(index,alpha){
+    var color_map=[
+        "rgba(255,75,0,"+String(alpha)+")",
+        "rgba(0,90,255,"+String(alpha)+")",
+        "rgba(3,175,122,"+String(alpha)+")",
+        "rgba(77,196,255,"+String(alpha)+")",
+        "rgba(246,170,0,"+String(alpha)+")",
+        "rgba(255,241,0,"+String(alpha)+")",
+    ];
+
+    map_idx=index%6;
+
+    console.log(color_map[map_idx]);
+
+    return color_map[map_idx]
+}
