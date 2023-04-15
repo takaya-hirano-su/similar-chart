@@ -1,3 +1,3 @@
-from .chart_getter import get_chart
+from .crypto_watch_API import *
 from .params import *
 from .AI_model  import *
