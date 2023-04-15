@@ -2,10 +2,12 @@ import torch
 from torch import Tensor,nn
 from omegaconf import DictConfig
 import numpy as np
+import pandas as pd
 
 from utils import make_batch,normalize
 from .decoder import Decoder
 from .encoder import Encoder
+from params import DAYS,FUTURE_DAYS
 
 
 class CryptAutoEncoder(nn.Module):
@@ -70,23 +72,30 @@ class CryptAutoEncoder(nn.Module):
         return self.encoder(x)
     
     @torch.no_grad()
-    def get_similar_chart(self,chart:np.ndarray,chart_past:np.ndarray):
+    def get_similar_chart(self,chart:pd.DataFrame,chart_past:pd.DataFrame,similar_chart_num:int=5):
         """
         似たチャートを選ぶ関数
 
-        :param chart: 選択したチャート. 次元はohlcの4つ
-        :type chart: numpy.ndarray [time_sequence x 4]
-        :param chart_past: 過去の時系列チャート. 次元はohlcの4つ
-        :type chat_past: numpy.ndarray [time_sequence x 4]
+        :param chart: 選択したチャート. 次元はohlcの4つと日付
+        :type chart: pd.DataFrame [time_sequence x (open,high,low,close,date)]
+        :param chart_past: 過去の時系列チャート. 次元はohlcの4つと日付
+        :type chat_past: pd.DataFrame [time_sequence x (open,high,low,close,date)]
+        :param int similar_chart_num: 上位何個のチャートを取るか
         """
 
-        chart=chart[np.newaxis,:,:] #バッチ方向に次元追加
-        chart=normalize(chart) #標準化
-        chart_past=make_batch(values=chart_past)
-        chart_past=normalize(chart_past)
+        columns=["open","high","low","close"]
 
-        z=self.encode(Tensor(chart)).to("cpu").detach().numpy() #特徴量の抽出
-        z_past=self.encode(Tensor(chart_past)).to("cpu").detach().numpy() #特徴量の抽出
+        chart_val=chart.loc[:,columns].values[np.newaxis,:,:] #バッチ方向に次元追加
+        param_mean=np.mean(chart_val,axis=1)
+        param_std=np.std(chart_val,axis=1)
+        chart_val=normalize(chart_val) #標準化
+
+        chart_past_val=chart_past.loc[:,columns].values
+        chart_past_val=make_batch(values=chart_past_val)
+        chart_past_val=normalize(chart_past_val)
+
+        z=self.encode(Tensor(chart_val)).to("cpu").detach().numpy() #特徴量の抽出
+        z_past=self.encode(Tensor(chart_past_val)).to("cpu").detach().numpy() #特徴量の抽出
 
         loss=(z_past[:,:,:]-z[:,:,:])**2 #2乗誤差を計算
         loss=np.mean(loss,axis=-1) #特徴次元方向に平均
@@ -94,4 +103,38 @@ class CryptAutoEncoder(nn.Module):
 
         best_idx=np.argmin(loss)
 
-        return chart_past[best_idx]
+        ##上位からsimilar_chart_num個の似ているチャートを取得
+        similar_charts=[] #似てるチャート
+        similar_charts_scaled=[] #スケールを合わせた似てるチャート
+        while len(similar_charts)<similar_chart_num:
+            best_idx=np.argmin(loss)
+            loss[best_idx]=np.inf
+            
+            similar_chart=chart_past.iloc[best_idx:best_idx+DAYS+FUTURE_DAYS] #FUTURE_DAYS日先まで見てみる
+
+            is_near=False #もうすでに取ったところと近いところは省く
+            for i in range(len(similar_charts)):
+                similar_date=similar_charts[i]["date"].iloc[0]
+                tmp_date=similar_chart["date"].iloc[0]
+                if (similar_date-tmp_date).days<10:
+                    is_near=True
+                    break
+            if is_near:
+                continue
+                    
+
+            similar_charts.append(similar_chart)
+
+            val=similar_chart.loc[:,columns].values
+            similar_chart_scaled=similar_chart.copy(deep=True)
+            similar_chart_scaled.loc[:,columns]=(val-np.mean(val[:-FUTURE_DAYS],axis=0))/(1e-16+np.std(val[:-FUTURE_DAYS],axis=0))
+            similar_chart_scaled.loc[:,columns]=similar_chart_scaled.loc[:,columns].values*(param_std+1e-16)+param_mean
+
+            dt=chart["date"].iloc[0]-similar_chart["date"].iloc[0]
+            similar_chart_scaled["date"]=similar_chart_scaled["date"].values+dt
+            similar_charts_scaled.append(similar_chart_scaled)
+
+            
+        ##
+
+        return similar_charts,similar_charts_scaled
