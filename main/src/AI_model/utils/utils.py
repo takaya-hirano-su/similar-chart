@@ -68,7 +68,7 @@ def read_ohlc(date_thr:date,is_train=True)->list:
 
                 if is_train:
                     data_ids=to_tuple_form(ohlc["id"].values)
-                    query=f"UPDATE main_ohlc SET is_train_data=TRUE WHERE id in {data_ids} AND NOT is_train_data=FALSE;" #学習用に取得したデータにチェックつける
+                    query=f"UPDATE main_ohlc SET is_train_data=TRUE WHERE id in {data_ids} AND is_train_data=FALSE;" #学習用に取得したデータにチェックつける
                     cursor.execute(query=query)
 
         con.commit()

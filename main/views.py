@@ -1,16 +1,29 @@
+from pathlib import Path
+PARENT=str(Path(__file__).parent)
+
 from django.shortcuts import render
 from .forms import Form
 from django.views.generic import TemplateView
 from .models import Pair,Market,OHLC
-from .src import *
+from .src.crypto_watch_API import get_chart
+from .src.AI_model import CryptAutoEncoder
+from .src.params import *
 from datetime import datetime,timedelta,date
 from django.db.models import Max
 from tqdm import tqdm
 import pandas as pd
 from django_pandas.io import read_frame
 import json
+from hydra.experimental import compose,initialize_config_dir
+import torch
 
-# Create your views here.
+
+##AIモデルの読み込み
+with initialize_config_dir(config_dir=f"{PARENT}/src/AI_model/conf"):
+    cfg=compose(config_name="main.yaml")
+crypto_auto_encoder=CryptAutoEncoder(cfg=cfg.crypto_auto_encoder)
+crypto_auto_encoder.load_state_dict(torch.load(f"{PARENT}/src/AI_model/model_param/param_epoch500.pth"))
+##
 
 class IndexView(TemplateView):
     
@@ -50,14 +63,40 @@ class IndexView(TemplateView):
             self.__read_ohlc(pair=pair,date=request_cp["date"]),
             fieldnames=["pair","is_train_data","open","high","low","close","date"]
             )        
+        # print(ohlc.shape)
+        
+        ohlc_train=OHLC.objects.filter(pair=pair).filter(is_train_data=True).order_by("date")
+        ohlc_train=read_frame(
+            ohlc_train,
+            fieldnames=["pair","is_train_data","open","high","low","close","date"]
+        )
+        ##
+
+        ##似たチャートをAIによって選ぶ
+        similar_charts,similar_charts_scaled=crypto_auto_encoder.get_similar_chart(
+            chart=ohlc,chart_past=ohlc_train
+        )
+        ##
+
+        ##選び足したチャートをjavascriptに渡すためにjsonに変換
+        similar_chart_json={}
+        for i in range(len(similar_charts)):
+            similar_charts[i].loc[:,"date"]=similar_charts[i]["date"].values.astype(str)
+            similar_charts_scaled[i].loc[:,"date"]=similar_charts_scaled[i]["date"].values.astype(str)
+            similar_chart_json[f"No{i+1}"]={
+                "original":similar_charts[i].to_dict(),
+                "scaled":similar_charts_scaled[i].to_dict(),
+                }
+        similar_chart_json=json.dumps(similar_chart_json,ensure_ascii=False)
+
         ohlc["date"]=ohlc["date"].astype(str) #時間を文字列に変換.datetimeのままjsonにするとunixになってしまう.
-        print(f"ohlc.shape:{ohlc.shape}")
         ##
         
         params={
             "forms":_form,
             "msg":f"{request_cp['market']},{request_cp['pair']},{request_cp['date']}",
             "chart":ohlc.to_json(),
+            "similar_chart":similar_chart_json,
         }
 
         return render(request=request,template_name="main/index.html",context=params)
