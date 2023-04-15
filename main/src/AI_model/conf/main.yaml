@@ -1,0 +1,26 @@
+hydra:
+  run:
+    dir: ./
+  output_subdir: null
+
+defaults:
+  - override hydra/hydra_logging: none
+  - override hydra/job_logging: none
+
+crypto_auto_encoder:
+  encoder:
+    input_size: 4
+    hidden_size: 2
+    hidden_layer_num: 1
+  
+  decoder:
+    input_size: ${crypto_auto_encoder.encoder.hidden_size}
+    hidden_size: 4
+    hidden_layer_num: 1
+    output_size: ${crypto_auto_encoder.encoder.input_size}
+
+trainer:
+  learning_rate: 0.001
+  mini_batch: 64
+  epoches: 500
+  save_interval: 100
