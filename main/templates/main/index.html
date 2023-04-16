@@ -19,44 +19,16 @@
 
     <canvas id="main-canvas">No chart...</canvas>
 
+    {% for canvas_id in similar_canvas_ids %}
+    <canvas id='{{canvas_id|safe}}'>No chart...</canvas>
+    {% endfor %}
+
     <script src="{% static 'main/js/script.js' %}"></script>
     <script type="text/javascript">
-        var datasets=[];
-        var main_ctx="main-canvas";
-        var main_canvas=false;
-
-        var chart_data=JSON.parse('{{ chart|safe }}'); //formで選択したチャートデータ
-        datasets.push({
-            data:Object.values(chart_data["close"]),
-            type:"line",
-            fill:false,
-            label:"target-chart",
-            lineTension:0.0,
-            borderColor:getColor(0,0.7),
-            backgroundColor:getColor(0,0.7),
-        })
-        
-        var similar_chart=JSON.parse('{{similar_chart|safe}}'); 
-        // console.log(similar_chart);
-        var similar_num=Object.keys(similar_chart).length; 
-        
-        for(var i=0; i<similar_num; i++){
-            var values=Object.values(similar_chart["No"+String(i+1)]["scaled"]["close"]);
-            var dates=Object.values(similar_chart["No"+String(i+1)]["scaled"]["date"]);
-            var alpha=0.3/(i+1);
-
-            datasets.push({
-                data:values,
-                type:"line",
-                fill:false,
-                label:"similar-chart:No"+String(i+1),
-                lineTension:0.0,
-                borderColor:getColor(i+1,alpha),
-                backgroundColor:getColor(i+1,alpha),
-            })
-        }
-
-        drawChart(main_ctx,main_canvas,dates,datasets);
+        var target_chart=JSON.parse('{{chart|safe}}');
+        var similar_chart=JSON.parse('{{similar_chart|safe}}');
+        drawMainChart(target_chart,similar_chart);
+        drawSimilarChart(similar_chart);
     </script>
 
 </body>
