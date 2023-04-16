@@ -6,24 +6,15 @@ from .forms import Form
 from django.views.generic import TemplateView
 from .models import Pair,Market,OHLC
 from .src.crypto_watch_API import get_chart
-from .src.AI_model import CryptAutoEncoder
 from .src.params import *
 from datetime import datetime,timedelta,date
 from django.db.models import Max
-from tqdm import tqdm
 import pandas as pd
 from django_pandas.io import read_frame
 import json
-from hydra.experimental import compose,initialize_config_dir
-import torch
+import numpy as np
+from .apps import crypto_auto_encoder
 
-
-##AIモデルの読み込み
-with initialize_config_dir(config_dir=f"{PARENT}/src/AI_model/conf"):
-    cfg=compose(config_name="main.yaml")
-crypto_auto_encoder=CryptAutoEncoder(cfg=cfg.crypto_auto_encoder)
-crypto_auto_encoder.load_state_dict(torch.load(f"{PARENT}/src/AI_model/model_param/param_epoch500.pth"))
-##
 
 class IndexView(TemplateView):
     
@@ -74,7 +65,7 @@ class IndexView(TemplateView):
 
         ##似たチャートをAIによって選ぶ
         similar_charts,similar_charts_scaled=crypto_auto_encoder.get_similar_chart(
-            chart=ohlc,chart_past=ohlc_train
+            chart=ohlc,chart_past=ohlc_train,similar_chart_num=int(request.POST["similar_chart_num"])
         )
         ##
 
@@ -92,11 +83,14 @@ class IndexView(TemplateView):
         ohlc["date"]=ohlc["date"].astype(str) #時間を文字列に変換.datetimeのままjsonにするとunixになってしまう.
         ##
         
+        similar_canvas_ids=[f"canvas-No{i+1}" for i in np.arange(len(similar_charts),dtype=int)]
+
         params={
             "forms":_form,
             "msg":f"{request_cp['market']},{request_cp['pair']},{request_cp['date']}",
             "chart":ohlc.to_json(),
             "similar_chart":similar_chart_json,
+            "similar_canvas_ids":similar_canvas_ids,
         }
 
         return render(request=request,template_name="main/index.html",context=params)

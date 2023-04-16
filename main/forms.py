@@ -17,4 +17,5 @@ class Form (forms.Form):
         initial=str(NOW),
         widget=forms.NumberInput(attrs={"type":"date"}) #入力をカレンダーに設定
     )
+    similar_chart_num=forms.IntegerField(max_value=10,min_value=1,initial=5)
 

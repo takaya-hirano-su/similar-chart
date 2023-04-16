@@ -124,7 +124,7 @@ class CryptAutoEncoder(nn.Module):
             for i in range(len(similar_charts)):
                 similar_date=similar_charts[i]["date"].iloc[0]
                 tmp_date=similar_chart["date"].iloc[0]
-                if (similar_date-tmp_date).days<10:
+                if (similar_date-tmp_date).days<5:
                     is_near=True
                     break
             if is_near:
