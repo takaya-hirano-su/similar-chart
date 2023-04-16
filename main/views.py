@@ -8,7 +8,7 @@ from .models import Pair,Market,OHLC
 from .src.crypto_watch_API import get_chart
 from .src.params import *
 from datetime import datetime,timedelta,date
-from django.db.models import Max
+from django.db.models import Max,Min
 import pandas as pd
 from django_pandas.io import read_frame
 import json
@@ -27,6 +27,8 @@ class IndexView(TemplateView):
         return render(request=request,template_name="main/index.html",context=params)
     
     def post(self,request):
+
+        print(request.POST)
 
         market=Market.objects.filter(market=request.POST["market"])[0]
         choices=Pair.objects.filter(market=market)
@@ -49,12 +51,14 @@ class IndexView(TemplateView):
         self.__create_ohlc(pair=pair) #更新があるときは新たなレコードを作成
         ##
 
+        self.__set_date_range(pair=pair,form=_form)
+
         ##選択した通貨ペアをテーブルから読みだす
         ohlc=read_frame(
             self.__read_ohlc(pair=pair,date=request_cp["date"]),
             fieldnames=["pair","is_train_data","open","high","low","close","date"]
             )        
-        # print(ohlc.shape)
+        
         
         ohlc_train=OHLC.objects.filter(pair=pair).filter(is_train_data=True).order_by("date")
         ohlc_train=read_frame(
@@ -69,7 +73,7 @@ class IndexView(TemplateView):
         )
         ##
 
-        ##選び足したチャートをjavascriptに渡すためにjsonに変換
+        ##選びだしたチャートをjavascriptに渡すためにjsonに変換
         similar_chart_json={}
         for i in range(len(similar_charts)):
             similar_charts[i].loc[:,"date"]=similar_charts[i]["date"].values.astype(str)
@@ -84,6 +88,7 @@ class IndexView(TemplateView):
         ##
         
         similar_canvas_ids=[f"canvas-No{i+1}" for i in np.arange(len(similar_charts),dtype=int)]
+        similar_button_ids=[f"button-No{i+1}" for i in range(len(similar_canvas_ids))]
 
         params={
             "forms":_form,
@@ -91,6 +96,7 @@ class IndexView(TemplateView):
             "chart":ohlc.to_json(),
             "similar_chart":similar_chart_json,
             "similar_canvas_ids":similar_canvas_ids,
+            "similar_button_ids":similar_button_ids,
         }
 
         return render(request=request,template_name="main/index.html",context=params)
@@ -159,3 +165,7 @@ class IndexView(TemplateView):
             ##
         ##
             
+    def __set_date_range(self,pair,form:Form):
+        latest=OHLC.objects.filter(pair=pair).aggregate(Max("date"))["date__max"]
+        form.fields["date"].widget.attrs["max"]=latest
+        

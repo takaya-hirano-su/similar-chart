@@ -1,0 +1,106 @@
+body{
+    background-color: white;
+}
+
+h1{
+    padding-left: 50px;
+    padding-top: 10px;
+    font-family: "Anton",sans-serif;
+    transform:scaleY(0.95);
+    border-bottom: solid;
+    border-color: #F06060;
+}
+
+h1::first-letter{
+    color: #F06060;
+    font-size: 150%;
+}
+
+label{
+    font-weight: bold;
+}
+
+.side-bar p {
+    text-align: left;
+    width: 80%;
+    font-weight: bold;
+    border-bottom: 1px solid #F06060;
+}
+
+.side-bar p::first-letter{
+    color: #F06060;
+    font-size: 120%;
+}
+
+.wrapper{
+    max-width: 960px;
+    margin-top: -25px;
+    margin-bottom: -25px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 100px;
+    background-color: 	#fbfaf5;
+}
+.container{
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.flex-form{
+    display: flex;
+    flex-wrap: wrap;
+    background-color: white;
+    padding: 10px;
+    width: 98%;
+}
+
+@media (max-width:800){
+    .similar-chart{
+       width: 70%;
+    }
+}
+
+@media screen and (min-width:801px){
+    .flex-chart{
+        display: flex;
+        display: -webkit-flex;
+        max-height: 800px;
+        padding-top: 0px;
+    }
+    .main{
+        -webkit-flex:3;
+        padding: 15px;
+
+    }
+    .side-bar{
+        -webkit-flex:1;
+        overflow-y: scroll;
+        padding: 15px;
+        max-width: 240px;
+        border-left: 25px solid white;
+    }
+    .similar-chart{
+        width: 80%;
+        padding-left: 10%;
+    }
+}
+
+.chart-boder-u{
+    width: 105%;
+    border-bottom: 12.5px solid white;
+    padding-top: 2%;
+}
+
+.chart-boder-l{
+    width: 105%;
+    border-top: 12.5px solid white;
+    padding-bottom: 2%;
+}
+
+.main-canvas{
+    padding: 5px;
+}
+
+.similar-chart canvas:hover{
+    box-shadow: 0 14px 20px -4px rgba(0,0,0,0.25);
+}

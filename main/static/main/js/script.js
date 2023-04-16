@@ -13,10 +13,28 @@ var form_date=document.getElementById("id_date");
 form_date.addEventListener("change",function(){
     document.mainform.submit();
 });
+
+var form_similar_rank=document.getElementById("id_similar_rank");
+
+
+similar_chart_num=document.getElementById("id_similar_chart_num").value;
+var canvases=[];
+var canvas_values={};
+for (var i=0;i<similar_chart_num;i++){
+    canvases.push(
+        document.getElementById("canvas-No"+String(i+1))
+    );
+    canvas_values["canvas-No"+String(i+1)]=i+1;
+    canvases[i].addEventListener("click",function(){
+        form_similar_rank.value=canvas_values[this.id],
+        document.mainform.submit();
+    });
+}
+
 // END formが変更されたらPOST
 
 
-function drawChart(ctx,canvas,labels,datasets){
+function drawChart(ctx,canvas,labels,datasets,is_axes){
     /**
      * キャンバスにチャートを描画する関数
      */
@@ -24,6 +42,28 @@ function drawChart(ctx,canvas,labels,datasets){
         ctx.destroy();
     }
 
+    if(is_axes){
+        xAxes=[{
+            display: window.innerWidth>400,
+            ticks:{
+                autoSkip:true,
+                maxTicksLimit:15,
+            }
+        }];
+        yAxes=[{}]
+    }else{
+        xAxes=[{
+            display:false
+        }];
+        yAxes=[{
+            ticks:{
+                display:false,
+            }
+        }]
+
+    }
+
+    console.log(window.innerWidth);
   
     var canvas=new Chart(ctx,{
         type:"line",
@@ -33,13 +73,12 @@ function drawChart(ctx,canvas,labels,datasets){
         },
         options:{
             scales:{
-                xAxes:[{
-                    ticks:{
-                        autoSkip:true,
-                        maxTicksLimit:15,
-                    },
-                }]
-            }
+                xAxes:xAxes,
+                yAxes:yAxes,
+            },
+            legend:{
+                display:window.innerWidth>600,
+            },
         }
     });
 }
@@ -60,8 +99,6 @@ function getColor(index,alpha){
     ];
 
     map_idx=index%6;
-
-    console.log(color_map[map_idx]);
 
     return color_map[map_idx]
 }
@@ -91,13 +128,13 @@ function drawMainChart(target_chart,similar_chart){
     for(var i=0; i<similar_num; i++){
         var values=Object.values(similar_chart["No"+String(i+1)]["scaled"]["close"]);
         var dates=Object.values(similar_chart["No"+String(i+1)]["scaled"]["date"]);
-        var alpha=0.3/(i+1);
+        var alpha=0.5/(i+1);
 
         datasets.push({
             data:values,
             type:"line",
             fill:false,
-            label:"similar-chart:No"+String(i+1),
+            label:"No"+String(i+1),
             lineTension:0.0,
             borderColor:getColor(i+1,alpha),
             backgroundColor:getColor(i+1,alpha),
@@ -107,9 +144,33 @@ function drawMainChart(target_chart,similar_chart){
         });
     }
 
-    drawChart(main_ctx,false,dates,datasets);
+    drawChart(main_ctx,false,dates,datasets,true);
 }
 
+function drawSelectedChart(similar_chart){
+    var selected_ctx="selected-canvas";
+    var selected_rank=form_similar_rank.value;
+    console.log(selected_rank);
+
+    var values=Object.values(similar_chart["No"+String(selected_rank)]["original"]["close"]);
+    var dates=Object.values(similar_chart["No"+String(selected_rank)]["original"]["date"]);
+    var datasets=[{
+        data:values,
+        type:"line",
+        fill:false,
+        label:"No"+String(selected_rank),
+        lineTension:0.0,
+        borderColor:getColor(selected_rank,0.7),
+        backgroundColor:getColor(selected_rank,0.7),
+        pointBorderColor:"rgba(0,0,0,0)",
+        pointBackgroundColor:"rgba(0,0,0,0)",
+        pointRadius:0,
+    }];
+
+    drawChart(ctx=selected_ctx,false,dates,datasets,true);
+
+
+}
 
 function drawSimilarChart(similar_chart){
     /**
@@ -126,7 +187,7 @@ function drawSimilarChart(similar_chart){
             data:values,
             type:"line",
             fill:false,
-            label:"similar-chart:No"+String(i+1),
+            label:"No"+String(i+1),
             lineTension:0.0,
             borderColor:getColor(i+1,0.7),
             backgroundColor:getColor(i+1,0.7),
@@ -135,6 +196,6 @@ function drawSimilarChart(similar_chart){
             pointRadius:0,
         }];
 
-        drawChart(canvas_id,false,dates,datasets);
+        drawChart(canvas_id,false,dates,datasets,false);
     }
 }
