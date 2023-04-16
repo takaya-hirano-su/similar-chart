@@ -37,7 +37,7 @@ def read_ohlc(date_thr:date,is_train=True)->list:
     con=psycopg2.connect(
         host="localhost",
         user="postgres",
-        password="xe7z76fr",
+        password="XXXXXXXX",
         database="similar_chart",
     )
 

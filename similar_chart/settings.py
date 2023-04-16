@@ -91,7 +91,7 @@ DATABASES={
         "ENGINE":"django.db.backends.postgresql_psycopg2",
         "NAME":"similar_chart",
         "USER":"postgres",
-        "PASSWORD":"xe7z76fr",
+        "PASSWORD":"XXXXXXXX",
         "HOST":"localhost",
         "PORT":"5432",
     }
