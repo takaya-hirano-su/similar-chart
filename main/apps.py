@@ -2,7 +2,7 @@ from pathlib import Path
 PARENT=str(Path(__file__).parent)
 
 from django.apps import AppConfig
-from hydra.experimental import compose,initialize_config_dir
+from hydra import compose,initialize_config_dir
 from .src.AI_model import CryptAutoEncoder
 import torch
 

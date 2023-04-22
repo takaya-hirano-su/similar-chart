@@ -80,7 +80,10 @@ class CryptAutoEncoder(nn.Module):
         return self.encoder(x)
     
     @torch.no_grad()
-    def get_similar_chart(self,chart:pd.DataFrame,chart_past:pd.DataFrame,similar_chart_num:int=5):
+    def get_similar_chart(
+        self,chart:pd.DataFrame,chart_past:pd.DataFrame,similar_chart_num:int=5,
+        past_days:int=DAYS,future_days:int=15,
+        ):
         """
         似たチャートを選ぶ関数
 
@@ -89,6 +92,8 @@ class CryptAutoEncoder(nn.Module):
         :param chart_past: 過去の時系列チャート. 次元はohlcの4つと日付
         :type chat_past: pd.DataFrame [time_sequence x (open,high,low,close,date)]
         :param int similar_chart_num: 上位何個のチャートを取るか
+        :param int past_days: 何日分のチャートから判断するか
+        :param int future_days: 今から何日先のチャートまで表示するか
         """
 
         columns=["open","high","low","close"]
@@ -99,7 +104,7 @@ class CryptAutoEncoder(nn.Module):
         chart_val=normalize(chart_val) #標準化
 
         chart_past_val=chart_past.loc[:,columns].values
-        chart_past_val=make_batch(values=chart_past_val)
+        chart_past_val=make_batch(values=chart_past_val,batch_sequence=past_days)
         chart_past_val=normalize(chart_past_val)
 
         z=self.encode(Tensor(chart_val)).to("cpu").detach().numpy() #特徴量の抽出
@@ -109,40 +114,45 @@ class CryptAutoEncoder(nn.Module):
         loss=np.mean(loss,axis=-1) #特徴次元方向に平均
         loss=np.mean(loss,axis=-1) #時間方向に平均
 
-        best_idx=np.argmin(loss)
-
         ##上位からsimilar_chart_num個の似ているチャートを取得
         similar_charts=[] #似てるチャート
         similar_charts_scaled=[] #スケールを合わせた似てるチャート
-        while len(similar_charts)<similar_chart_num:
+        counter=0
+        while len(similar_charts)<similar_chart_num: 
             best_idx=np.argmin(loss)
             loss[best_idx]=np.inf
+            counter+=1
+            if counter>chart_past_val.shape[0]:
+                break #全部探索したらおしまい
             
-            similar_chart=chart_past.iloc[best_idx:best_idx+DAYS+FUTURE_DAYS] #FUTURE_DAYS日先まで見てみる
+            similar_chart=chart_past.iloc[best_idx:best_idx+past_days+future_days] #FUTURE_DAYS日先まで見てみる
 
             is_near=False #もうすでに取ったところと近いところは省く
             for i in range(len(similar_charts)):
                 similar_date=similar_charts[i]["date"].iloc[0]
                 tmp_date=similar_chart["date"].iloc[0]
-                if (similar_date-tmp_date).days<5:
+                if (similar_date-tmp_date).days<3:
                     is_near=True
                     break
             if is_near:
                 continue
                     
 
-            similar_charts.append(similar_chart.reset_index())
+            similar_charts.append(similar_chart.reset_index()) #似ているチャートの追加
 
+            ##似ているチャートを選択したチャートにスケールを合わせる
             val=similar_chart.loc[:,columns].values
             similar_chart_scaled=similar_chart.copy(deep=True)
-            similar_chart_scaled.loc[:,columns]=(val-np.mean(val[:-FUTURE_DAYS],axis=0))/(1e-16+np.std(val[:-FUTURE_DAYS],axis=0))
+            similar_chart_scaled.loc[:,columns]=(val-np.mean(val[:-future_days],axis=0))/(1e-16+np.std(val[:-future_days],axis=0))
             similar_chart_scaled.loc[:,columns]=similar_chart_scaled.loc[:,columns].values*(param_std+1e-16)+param_mean
 
             dt=chart["date"].iloc[0]-similar_chart["date"].iloc[0]
             similar_chart_scaled["date"]=similar_chart_scaled["date"].values+dt
-            similar_charts_scaled.append(similar_chart_scaled.reset_index())
-
+            similar_charts_scaled.append(similar_chart_scaled.reset_index()) #スケールを合わせたものを追加
             
+            ##
         ##
+
+        # print(debug_counter)
 
         return similar_charts,similar_charts_scaled

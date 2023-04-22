@@ -55,7 +55,7 @@ class IndexView(TemplateView):
 
         ##選択した通貨ペアをテーブルから読みだす
         ohlc=read_frame(
-            self.__read_ohlc(pair=pair,date=request_cp["date"]),
+            self.__read_ohlc(pair=pair,date=request_cp["date"],past_days=int(request_cp["past_days"])),
             fieldnames=["pair","is_train_data","open","high","low","close","date"]
             )        
         
@@ -69,7 +69,8 @@ class IndexView(TemplateView):
 
         ##似たチャートをAIによって選ぶ
         similar_charts,similar_charts_scaled=crypto_auto_encoder.get_similar_chart(
-            chart=ohlc,chart_past=ohlc_train,similar_chart_num=int(request.POST["similar_chart_num"])
+            chart=ohlc,chart_past=ohlc_train,similar_chart_num=int(request.POST["similar_chart_num"]),
+            past_days=int(request_cp["past_days"]),future_days=int(request_cp["future_days"]),
         )
         ##
 
@@ -102,18 +103,19 @@ class IndexView(TemplateView):
         return render(request=request,template_name="main/index.html",context=params)
 
 
-    def __read_ohlc(self,pair:Pair,date:str):
+    def __read_ohlc(self,pair:Pair,date:str,past_days:int):
         """
-        dateからDAYS日前までのチャートを取得(DAYSはデフォルトで72日)
+        dateからpast_days日前までのチャートを取得
 
         :param Pair pair: 通貨ペアのモデルクラス
         :param str date: フォームで入力された日付
+        :param int past_days: フォームで入力された日数
         """
 
         ##date-DAYS(72日)~dateの範囲における通貨ペアを取得
         date=datetime.strptime(date,"%Y-%m-%d")
         before=datetime(year=date.year,month=date.month,day=date.day,hour=9)
-        after=before-timedelta(days=DAYS-1)
+        after=before-timedelta(days=past_days-1)
         ohlc=OHLC.objects\
             .filter(pair=pair)\
             .filter(date__gte=after.date())\

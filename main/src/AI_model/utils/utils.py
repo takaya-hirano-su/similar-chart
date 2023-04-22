@@ -37,7 +37,7 @@ def read_ohlc(date_thr:date,is_train=True)->list:
     con=psycopg2.connect(
         host="localhost",
         user="postgres",
-        password="XXXXXXXX",
+        password="xe7z76fr",
         database="similar_chart",
     )
 
@@ -77,20 +77,21 @@ def read_ohlc(date_thr:date,is_train=True)->list:
 
 
 
-def make_batch(values:np.ndarray):
+def make_batch(values:np.ndarray,batch_sequence:int=DAYS):
     """
     1本の時系列データをバッチ形式に変換する
 
     :param values:1列の時系列データ
     :type values: numpy.ndarray [time_sequence x input_size]
+    :param int batch_sequence: 1つのバッチデータにおける時系列の長さ
     :return batch: バッチ形式にしたデータ
     :type batch: numpy.ndarray [batchsize x DAYS x input_size]
     """
 
     batch=[]
     length,_=values.shape
-    for i in range(length-DAYS+1):
-        batch.append(values[i:i+DAYS])
+    for i in range(length-batch_sequence+1):
+        batch.append(values[i:i+batch_sequence])
 
     return np.array(batch)
 

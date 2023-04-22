@@ -11,6 +11,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
 </head>
 <body>
+    <!-- Header Start -->
+    <header class="site-header">
+        <a class="header-title" href="#">Similar Chart</a>
+    </header>
+    <!-- Header End -->
+
     <div class="wrapper">
         <h1>Similar Chart</h1>
         <div class="container">
@@ -38,7 +44,7 @@
                 </div>
 
                 <div class="side-bar">
-                    <p><span>S</span>imilar Ranking</p>
+                    <p>Similar Ranking</p>
                     {% for canvas_id in similar_canvas_ids %}
                     <div class="similar-chart">
                         <canvas id='{{canvas_id|safe}}' width="300" height="200">No chart...</canvas>

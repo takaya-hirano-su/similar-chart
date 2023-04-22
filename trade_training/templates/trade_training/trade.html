@@ -1,0 +1,79 @@
+{%load static%}
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Trade Training</title>
+
+    <!-- chart.jsの読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+</head>
+<body>
+    <h1>Trade Training</h1>
+    <form action="{% url 'trade' %}" method="post" name="market_pair_form">
+        <table>
+            {% csrf_token %}
+            {{market_pair_form.as_table}}
+        </table>
+    </form>
+
+    <canvas id="pair-bar">No Data...</canvas>
+
+    <div class="quote">
+        <div>BID</div>
+        <div>{{quote.bid}}</div>
+    </div>
+    <div class="quote">
+        <div>ASK</div>
+        <div>{{quote.ask}}</div>
+    </div>
+
+    <form action="{% url 'trade' %}" method="post" name="trade_form">
+        <table>
+            {% csrf_token %}
+            {{trade_form.as_table}}
+        </table>
+    </form>
+
+    <script>
+
+        var crypto_price=parseFloat('{{user_coin.lot}}')*parseFloat('{{quote.bid}}'); //今持ってるコインの価値
+        var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
+        var pair_name='{{user_coin.pair.pair}}'.toUpperCase();
+
+        const pair_bar_ctx="pair-bar";
+        var pair_bar=new Chart(pair_bar_ctx,{
+            type:"horizontalBar",
+            data:{
+                labels:[pair_name],
+                datasets:[
+                    {
+                        label:"Crypto",
+                        data:[crypto_price],
+                        backgroundColor:"red",
+                    },{
+                        label:"Currency",
+                        data:[currency],
+                        backgroundColor:"blue"
+                    }
+                ]
+            },
+            options:{
+                scales:{
+                    xAxes:[
+                        {
+                            stacked:true,
+                        },
+                    ],
+                    yAxes:[
+                        {
+                            stacked:true,
+                        },
+                    ],
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -152,6 +152,7 @@ function drawSelectedChart(similar_chart){
     var selected_rank=form_similar_rank.value;
     console.log(selected_rank);
 
+    // 選択したチャートのデータ
     var values=Object.values(similar_chart["No"+String(selected_rank)]["original"]["close"]);
     var dates=Object.values(similar_chart["No"+String(selected_rank)]["original"]["date"]);
     var datasets=[{
@@ -160,15 +161,14 @@ function drawSelectedChart(similar_chart){
         fill:false,
         label:"No"+String(selected_rank),
         lineTension:0.0,
-        borderColor:getColor(selected_rank,0.7),
-        backgroundColor:getColor(selected_rank,0.7),
+        borderColor:getColor(selected_rank,0.5),
+        backgroundColor:getColor(selected_rank,0.5),
         pointBorderColor:"rgba(0,0,0,0)",
         pointBackgroundColor:"rgba(0,0,0,0)",
         pointRadius:0,
     }];
 
     drawChart(ctx=selected_ctx,false,dates,datasets,true);
-
 
 }
 
