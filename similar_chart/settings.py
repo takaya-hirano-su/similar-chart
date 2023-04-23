@@ -38,7 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "main", #アプリケーションの登録,
+    "main", #メインの似ているチャートを表示する機能の登録,
+    "trade_training", #取引練習機能の登録
+
+    #--allauth用のアプリ登録(ログイン機能)
+    "accounts",
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    #--
 ]
 
 MIDDLEWARE = [
@@ -91,7 +100,7 @@ DATABASES={
         "ENGINE":"django.db.backends.postgresql_psycopg2",
         "NAME":"similar_chart",
         "USER":"postgres",
-        "PASSWORD":"XXXXXXXXXX",
+        "PASSWORD":"xe7z76fr",
         "HOST":"localhost",
         "PORT":"5432",
     }
@@ -139,3 +148,29 @@ STATIC_ROOT=os.path.join(BASE_DIR,"static/")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#--allauthを使うための設定
+AUTH_USER_MODEL="accounts.CustomUser"
+
+SITE_ID=1
+AUTHENTICATION_BACKENDS=(
+    "allauth.account.auth_backends.AuthenticationBackend",
+    "django.contrib.auth.backends.ModelBackend",
+)
+ACCOUNT_AUTHENTICATION_METHOD="email"
+ACCOUNT_EMAIL_REQUIRED=True
+
+LOGIN_REDIRECT_URL="index"
+ACCOUNT_LOGOUT_REDIRECT_URL="account_login"
+
+ACCOUNT_LOGOUT_ON_GET=True
+
+ACCOUNT_EMAIL_SUBJECT_PREFIX=""
+
+DEFAULT_FROM_EMAIL="code.lab.200011@gmail.com"
+EMAIL_HOST="smtp.gmail.com"
+EMAIL_PORT=587
+EMAIL_HOST_USER="code.lab.200011@gmail.com"
+EMAIL_HOST_PASSWORD="bofydhcpoorhbqah"
+EMAIL_USE_TLS=True
+#--

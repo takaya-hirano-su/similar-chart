@@ -1,5 +1,28 @@
 body{
     background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
+
+header{
+    box-sizing: border-box;
+    width: 100%;
+    background-color: rgba(251, 250, 245,0.5);
+    margin: 0 0;
+    box-shadow: 0 4px 8px -4px rgba(0,0,0,0.25);
+    padding: 10px;
+    top: 0px;
+    z-index: 10;
+    position: fixed;
+}
+
+header .header-title{
+    padding-left: 30px;
+    font-family: "Anton",sans-serif;
+    font-size: x-large;
+    color: black;
+    /* border-left: 20px solid #F06060; */
 }
 
 h1{
@@ -21,10 +44,11 @@ label{
 }
 
 .side-bar p {
-    text-align: left;
+    text-align: center;
     width: 80%;
     font-weight: bold;
     border-bottom: 1px solid #F06060;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .side-bar p::first-letter{
@@ -34,12 +58,13 @@ label{
 
 .wrapper{
     max-width: 960px;
-    margin-top: -25px;
+    margin-top: 40px;
     margin-bottom: -25px;
     margin-left: auto;
     margin-right: auto;
     padding-bottom: 100px;
-    background-color: 	#fbfaf5;
+    background-color: 	white;
+    top:0;
 }
 .container{
     padding-left: 50px;
@@ -49,51 +74,57 @@ label{
 .flex-form{
     display: flex;
     flex-wrap: wrap;
-    background-color: white;
+    background-color: #fbfaf5;
     padding: 10px;
-    width: 98%;
+    margin: 15px;
+    width: 94%;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
-@media (max-width:800){
-    .similar-chart{
-       width: 70%;
-    }
+.main{
+    background-color: #fbfaf5;
+}
+
+.side-bar{
+    background-color: #fbfaf5;
 }
 
 @media screen and (min-width:801px){
     .flex-chart{
         display: flex;
         display: -webkit-flex;
-        max-height: 800px;
+        max-height: 900px;
         padding-top: 0px;
     }
     .main{
         -webkit-flex:3;
-        padding: 15px;
+        margin-left: 15px;
+        margin-right: 15px;
+        margin-top: 15px;
 
     }
     .side-bar{
         -webkit-flex:1;
         overflow-y: scroll;
-        padding: 15px;
+        margin: 15px;
         max-width: 240px;
-        border-left: 25px solid white;
+        
     }
     .similar-chart{
         width: 80%;
-        padding-left: 10%;
+        padding-left: 5%;
     }
 }
 
 .chart-boder-u{
     width: 105%;
-    border-bottom: 12.5px solid white;
+    border-bottom: 15px solid white;
     padding-top: 2%;
 }
 
 .chart-boder-l{
     width: 105%;
-    border-top: 12.5px solid white;
+    border-top: 15px solid white;
     padding-bottom: 2%;
 }
 
