@@ -3,10 +3,10 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>Trade Training</title>
+    <title>Deposit</title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'trade_training/css/style.css' %}">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'trade_training/css/style.css' %}"> -->
     <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
     <!-- chart.jsの読み込み -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
@@ -19,36 +19,25 @@
     <!-- Header End -->
 
     <div class="wrapper">
-        <h1>仮想トレード</h1>
+        <h1>入出金</h1>
         <div class="container">
-            <form action="{% url 'trade' %}" method="post" name="trade_form">
+            <form action="{% url 'deposit' %}" method="post" name="deposit_form">
                 <table>
                     {% csrf_token %}
-                    {{market_pair_form.as_table}}
+                    {{market_currency_form.as_table}}
                 </table>
 
                 <h2>残高</h2>
                 <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
 
-                <h3>BID/ASK ({{quote.datetime|date:"Y/m/d H:i"}})</h3>
-                <div class="flex-quote">
-                    <div class="quote">
-                        <div>BID<br>(売値)</div>
-                        <div>{{user_currency.currency.symbol}}{{quote.bid}}</div>
-                    </div>
-                    <div class="quote">
-                        <div>ASK<br>(買値)</div>
-                        <div>{{user_currency.currency.symbol}}{{quote.ask}}</div>
-                    </div>
-                </div>
-
+                <h2>入金/出金</h2>
                 <table>
                     {% csrf_token %}
-                    {{trade_form.as_table}}
+                    {{deposit_withdraw_form.as_table}}
                     <tr>
                         <td></td>
                         <td>
-                            <input type="submit" value="注文" id="commit-button">
+                            <input type="submit" value="確定" id="commit-button">
                         </td>
                     </tr>
                 </table>
@@ -58,17 +47,35 @@
 
     <script>
 
-        console.log('{{user_currency}}');
+        function getColor(index,alpha){
+            /**
+             * グラフの色を返す関数
+             * 6色を回して返す
+             */
+            var color_map=[
+                "rgba(255,75,0,"+String(alpha)+")",
+                "rgba(0,90,255,"+String(alpha)+")",
+                "rgba(3,175,122,"+String(alpha)+")",
+                "rgba(77,196,255,"+String(alpha)+")",
+                "rgba(246,170,0,"+String(alpha)+")",
+                "rgba(255,241,0,"+String(alpha)+")",
+            ];
+
+            map_idx=index%6;
+
+            return color_map[map_idx]
+        }
+
 
         // marketかpairが変更されたら更新
         const market_form=document.getElementById("id_market");
         market_form.addEventListener("change",function(){
-            document.trade_form.submit();
+            document.deposit_form.submit();
         });
 
-        const pair_form=document.getElementById("id_pair");
+        const pair_form=document.getElementById("id_currency");
         pair_form.addEventListener("change",function(){
-            document.trade_form.submit();
+            document.deposit_form.submit();
         });
 
         const commit_button=document.getElementById("commit-button");
@@ -78,34 +85,40 @@
         });
 
         // START 棒グラフの描画
-        var crypto_lot='{{user_coin.lot}}'
-        var crypto_price=parseFloat(crypto_lot)*parseFloat('{{quote.bid}}'); //今持ってるコインの価値
-        var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
-        var pair_name='{{user_coin.pair.pair}}'.toUpperCase();
+        var datasets=[];
 
+        var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
         var name_currency='{{user_currency.currency.currency}}';
         var symbol_currency='{{user_currency.currency.symbol}}'
         var label_currency=name_currency+" "+symbol_currency+'{{user_currency.price}}';
+        datasets.push({
+            label:label_currency,
+            data:[currency],
+            backgroundColor:getColor(0,1.0),
+        });
 
-        var name_crypto=pair_name.replace(name_currency,"");
-        var label_crypto=name_crypto+" "+crypto_lot+" ( "+symbol_currency+String(crypto_price)+" ) ";
+        var user_coins=JSON.parse('{{user_coins|safe}}');
+        var keys=Object.keys(user_coins);
+        for(var i=0;i<keys.length;i++){
+            var key=keys[i];
+            var lot=parseFloat(user_coins[key]["lot"]); //数量
+            var price=lot*parseFloat(user_coins[key]["bid"]); //価格
+            var name=key.toUpperCase().replace(name_currency,"");
+            var label=name+" "+String(lot)+" ( "+symbol_currency+String(price)+" )";
+            datasets.push({
+                label:label,
+                data:[price],
+                backgroundColor:getColor(i+1,1.0),
+            });
+        }      
+        
 
         const pair_bar_ctx="pair-bar";
         var pair_bar=new Chart(pair_bar_ctx,{
             type:"horizontalBar",
             data:{
-                labels:[pair_name],
-                datasets:[
-                    {
-                        label:label_crypto,
-                        data:[crypto_price],
-                        backgroundColor:"red",
-                    },{
-                        label:label_currency,
-                        data:[currency],
-                        backgroundColor:"blue"
-                    }
-                ]
+                labels:["TOTAL"],
+                datasets:datasets,
             },
             options:{
                 scales:{

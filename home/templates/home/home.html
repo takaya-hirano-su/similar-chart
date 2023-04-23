@@ -1,0 +1,152 @@
+{%load static%}
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>Home</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'trade_training/css/style.css' %}"> -->
+    <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
+    <!-- chart.jsの読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Header Start -->
+    <header class="site-header">
+        <a class="header-title" href="#">Home</a>
+    </header>
+    <!-- Header End -->
+
+    <div class="wrapper">
+        <h1>ホーム</h1>
+        <div class="container">
+
+            <form action="{% url 'home' %}" method="post" name="home_form">
+                <table>
+                    {% csrf_token %}
+                    {{market_currency_form.as_table}}
+                </table>
+            </form>
+
+            <h2>残高</h2>
+            <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+
+            <h2>資産推移</h2>
+            <canvas id="user-chart">No Data...</canvas>
+
+        </div>
+    </div>
+
+    <script>
+
+        function getColor(index,alpha){
+            /**
+             * グラフの色を返す関数
+             * 6色を回して返す
+             */
+            var color_map=[
+                "rgba(255,75,0,"+String(alpha)+")",
+                "rgba(0,90,255,"+String(alpha)+")",
+                "rgba(3,175,122,"+String(alpha)+")",
+                "rgba(77,196,255,"+String(alpha)+")",
+                "rgba(246,170,0,"+String(alpha)+")",
+                "rgba(255,241,0,"+String(alpha)+")",
+            ];
+
+            map_idx=index%6;
+
+            return color_map[map_idx]
+        }
+
+
+        // marketかpairが変更されたら更新
+        const market_form=document.getElementById("id_market");
+        market_form.addEventListener("change",function(){
+            document.form_form.submit();
+        });
+
+        const pair_form=document.getElementById("id_currency");
+        pair_form.addEventListener("change",function(){
+            document.form_form.submit();
+        });
+
+
+        // START 棒グラフの描画
+        var datasets=[];
+
+        var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
+        var name_currency='{{user_currency.currency.currency}}';
+        var symbol_currency='{{user_currency.currency.symbol}}'
+        var label_currency=name_currency+" "+symbol_currency+'{{user_currency.price}}';
+        datasets.push({
+            label:label_currency,
+            data:[currency],
+            backgroundColor:getColor(0,1.0),
+        });
+
+        var user_coins=JSON.parse('{{user_coins|safe}}');
+        var keys=Object.keys(user_coins);
+        for(var i=0;i<keys.length;i++){
+            var key=keys[i];
+            var lot=parseFloat(user_coins[key]["lot"]); //数量
+            var price=lot*parseFloat(user_coins[key]["bid"]); //価格
+            var name=key.toUpperCase().replace(name_currency,"");
+            var label=name+" "+String(lot)+" ( "+symbol_currency+String(price)+" )";
+            datasets.push({
+                label:label,
+                data:[price],
+                backgroundColor:getColor(i+1,1.0),
+            });
+        }      
+        
+
+        const pair_bar_ctx="pair-bar";
+        var pair_bar=new Chart(pair_bar_ctx,{
+            type:"horizontalBar",
+            data:{
+                labels:["TOTAL"],
+                datasets:datasets,
+            },
+            options:{
+                scales:{
+                    xAxes:[
+                        {
+                            stacked:true,
+                        },
+                    ],
+                    yAxes:[
+                        {
+                            stacked:true,
+                        },
+                    ],
+                }
+            }
+        });
+        // END 棒グラフの描画
+
+        //資産チャートの描画
+        var chart_labels=Object.values(JSON.parse('{{chart_dates|safe}}')[0]);
+        console.log(chart_labels);
+        var user_chart_values=Object.values(JSON.parse('{{user_chart|safe}}'));
+
+        const user_chart_ctx="user-chart";
+        var user_chart=new Chart(user_chart_ctx,{
+            type:"line",
+            data:{
+                labels:chart_labels,
+                datasets:[{
+                    data:user_chart_values,
+                    type:"line",
+                    fill:false,
+                    label:"資産遷移",
+                    lineTension:0.0,
+                    borderColor:getColor(0,0.8),
+                    backgroundColor:getColor(0,0.8),
+                }]
+            }
+        });
+    </script>
+</body>
+
+</html>

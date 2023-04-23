@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "main", #メインの似ているチャートを表示する機能の登録,
     "trade_training", #取引練習機能の登録
+    "deposit", #仮入出金機能の追加
+    "home", #ホーム画面の登録
 
     #--allauth用のアプリ登録(ログイン機能)
     "accounts",

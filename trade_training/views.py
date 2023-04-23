@@ -108,7 +108,7 @@ class TradeTrainingView(TemplateView):
         user_coin=UserCoin.objects.get(net_asset=net_asset,pair=pair)
         user_currency=UserCurrnecy.objects.get(net_asset=net_asset,currency=currency)
 
-        if request_post["is_commit"]=="True": #確定ボタンが押された時だけ,売買の処理をする
+        if request_post["is_commit"]=="True": #注文ボタンが押された時だけ,売買の処理をする
             if request_post["action"]=="buy":
                 action_buy(
                     user_coin=user_coin,user_currency=user_currency,
