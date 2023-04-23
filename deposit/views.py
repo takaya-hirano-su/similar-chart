@@ -50,6 +50,7 @@ class DepositView(TemplateView):
                 user_coins[user_coin.pair.pair]={
                     "bid":quote.bid,"lot":user_coin.lot
                 }
+                
         user_coins=json.dumps(user_coins,ensure_ascii=False)
         #print(user_coins)
 

@@ -22,9 +22,10 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("main/",include("main.urls"),name="main"),
+    path("analysis/",include("main.urls"),name="main"),
     path("accounts/",include("allauth.urls")),
     path("trade/",include("trade_training.urls"),name="trade"),
     path("deposit/",include("deposit.urls"),name="deposit"),
+    path("home/",include("home.urls"),name="home"),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}), # 追加
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) # 追加

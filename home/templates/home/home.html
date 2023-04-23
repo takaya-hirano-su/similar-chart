@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>Deposit</title>
+    <title>Home</title>
 
     <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
     <!-- <link rel="stylesheet" type="text/css" href="{% static 'trade_training/css/style.css' %}"> -->
@@ -14,34 +14,27 @@
 <body>
     <!-- Header Start -->
     <header class="site-header">
-        <a class="header-title" href="#">Similar Chart</a>
+        <a class="header-title" href="#">Home</a>
     </header>
     <!-- Header End -->
 
     <div class="wrapper">
-        <h1>入出金</h1>
+        <h1>ホーム</h1>
         <div class="container">
-            <form action="{% url 'deposit' %}" method="post" name="deposit_form">
+
+            <form action="{% url 'home' %}" method="post" name="home_form">
                 <table>
                     {% csrf_token %}
                     {{market_currency_form.as_table}}
                 </table>
-
-                <h2>残高</h2>
-                <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
-
-                <h2>入金/出金</h2>
-                <table>
-                    {% csrf_token %}
-                    {{deposit_withdraw_form.as_table}}
-                    <tr>
-                        <td></td>
-                        <td>
-                            <input type="submit" value="確定" id="commit-button">
-                        </td>
-                    </tr>
-                </table>
             </form>
+
+            <h2>残高</h2>
+            <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+
+            <h2>資産推移</h2>
+            <canvas id="user-chart">No Data...</canvas>
+
         </div>
     </div>
 
@@ -70,19 +63,14 @@
         // marketかpairが変更されたら更新
         const market_form=document.getElementById("id_market");
         market_form.addEventListener("change",function(){
-            document.deposit_form.submit();
+            document.form_form.submit();
         });
 
         const pair_form=document.getElementById("id_currency");
         pair_form.addEventListener("change",function(){
-            document.deposit_form.submit();
+            document.form_form.submit();
         });
 
-        const commit_button=document.getElementById("commit-button");
-        commit_button.addEventListener("click",function(){
-            commit_form=document.getElementById("id_is_commit");
-            commit_form.value="True";
-        });
 
         // START 棒グラフの描画
         var datasets=[];
@@ -136,6 +124,28 @@
             }
         });
         // END 棒グラフの描画
+
+        //資産チャートの描画
+        var chart_labels=Object.values(JSON.parse('{{chart_dates|safe}}')[0]);
+        console.log(chart_labels);
+        var user_chart_values=Object.values(JSON.parse('{{user_chart|safe}}'));
+
+        const user_chart_ctx="user-chart";
+        var user_chart=new Chart(user_chart_ctx,{
+            type:"line",
+            data:{
+                labels:chart_labels,
+                datasets:[{
+                    data:user_chart_values,
+                    type:"line",
+                    fill:false,
+                    label:"資産遷移",
+                    lineTension:0.0,
+                    borderColor:getColor(0,0.8),
+                    backgroundColor:getColor(0,0.8),
+                }]
+            }
+        });
     </script>
 </body>
 
