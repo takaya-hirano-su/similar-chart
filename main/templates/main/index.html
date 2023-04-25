@@ -1,70 +1,72 @@
+{% extends "main/base.html" %}
 {% load static %}
 
-<!doctype html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>Similar Chart</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
-    <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
-    <!-- chartjs読み込み -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
-</head>
-<body>
-    <!-- Header Start -->
-    <header class="site-header">
-        <a class="header-title" href="#">Similar Chart</a>
-    </header>
-    <!-- Header End -->
+{% block css-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+{% endblock %}
 
-    <div class="wrapper">
-        <h1>チャート分析</h1>
-        <div class="container">
-            <div class="flex-form">
-                <form action="{% url 'index' %}" method="post" name="mainform">
-                    {% csrf_token %}
-                    {% for field in forms %}
-                        {% if field.is_hidden != True %}{{field.label_tag}}{% endif %}
-                        {{field}}
-                    {% endfor %}
-                </form>
-            </div>
-
-            <div class="flex-chart">
-
-                <div class="main">
-                    <div class="main-canvas">
-                        <canvas id="main-canvas" width="300" height="200">No chart...</canvas>
-                    </div>
-                    <div class="chart-boder-u"></div>
-                    <div class="chart-boder-l"></div>
-                    <div class="main-canvas">
-                        <canvas id="selected-canvas" width="300" height="200">No chart...</canvas>
-                    </div>
-                </div>
-
-                <div class="side-bar">
-                    <p>Similar Ranking</p>
-                    {% for canvas_id in similar_canvas_ids %}
-                    <div class="similar-chart">
-                        <canvas id='{{canvas_id|safe}}' width="300" height="200">No chart...</canvas>
-                    </div>
-                    {% endfor %}
-                </div>
-
-            </div>
-        <div>
+{% block main-content %}
+<h1>チャート分析</h1>
+<div class="contents">
+    <div class="document">
+        <p>選択した日付までのチャートと類似する過去チャートをAIによって分析し表示します。</p>
+        <p>類似する過去チャートの値動きを見ることで、今後の値動き予測の参考にすることが可能です。</p>
     </div>
+    <div class="analysis-form">
+        <h2>分析設定</h2>
+        <form action="{% url 'index' %}" method="post" name="mainform">
+            <div class="container">
+            {% csrf_token %}
+            {% for field in forms %}
+                <div class="row">
+                    <div class="col-sm-3">{% if field.is_hidden != True %}{{field.label_tag|safe}}{% endif %}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+            {% endfor %}
+                <div class="row">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">分析</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="flex-chart">
+        <div class="main" id="id-analysis">
+            <h3>分析結果</h3>
+            <div class="main-canvas">
+                <canvas id="main-canvas" width="300" height="200">No chart...</canvas>
+            </div>
+            <div class="chart-boder-u"></div>
+            <div class="chart-boder-l"></div>
 
-    <script src="{% static 'main/js/script.js' %}"></script>
-    <script type="text/javascript">
-        var target_chart=JSON.parse('{{chart|safe}}');
-        var similar_chart=JSON.parse('{{similar_chart|safe}}');
-        var similar_chart_num=Object.keys(similar_chart).length; 
-        drawMainChart(target_chart,similar_chart);
-        drawSelectedChart(similar_chart);
-        drawSimilarChart(similar_chart);
-    </script>
+            <h3>類似チャート</h3>
+            <div class="main-canvas">
+                <canvas id="selected-canvas" width="300" height="200">No chart...</canvas>
+            </div>
+        </div>
 
-</body>
-</html>
+        <div class="side-bar">
+            <p>類似度ランキング</p>
+            {% for canvas_id in similar_canvas_ids %}
+            <div class="similar-chart">
+                <canvas id='{{canvas_id|safe}}' width="300" height="200">No chart...</canvas>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+<div>
+{% endblock %}
+
+{% block js-content %}
+<script src="{% static 'main/js/script.js' %}"></script>
+<script type="text/javascript">
+    var target_chart=JSON.parse('{{chart|safe}}');
+    var similar_chart=JSON.parse('{{similar_chart|safe}}');
+    var similar_chart_num=Object.keys(similar_chart).length; 
+    drawMainChart(target_chart,similar_chart);
+    drawSelectedChart(similar_chart);
+    drawSimilarChart(similar_chart);
+</script>
+{% endblock %}

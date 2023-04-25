@@ -19,13 +19,58 @@ from .apps import crypto_auto_encoder
 class IndexView(TemplateView):
     
     def get(self,request):
+
+        init_pair=Pair.objects.all()[0]
+
+        print(str(Form.date_latest))
+
+        ##選択した通貨ペアをテーブルから読みだす
+        ohlc=read_frame(
+            self.__read_ohlc(pair=init_pair,date=str(Form.date_latest),past_days=Form.init_days),
+            fieldnames=["pair","is_train_data","open","high","low","close","date"]
+            )        
+        
+        ohlc_train=OHLC.objects.filter(pair=init_pair).filter(is_train_data=True).order_by("date")
+        ohlc_train=read_frame(
+            ohlc_train,
+            fieldnames=["pair","is_train_data","open","high","low","close","date"]
+        )
+        ##
+
+        ##似たチャートをAIによって選ぶ
+        similar_charts,similar_charts_scaled=crypto_auto_encoder.get_similar_chart(
+            chart=ohlc,chart_past=ohlc_train,similar_chart_num=Form().init_chart_num,
+            past_days=Form().init_days,future_days=Form().init_future_days,
+        )
+        ##
+
+        ##選びだしたチャートをjavascriptに渡すためにjsonに変換
+        similar_chart_json={}
+        for i in range(len(similar_charts)):
+            similar_charts[i].loc[:,"date"]=similar_charts[i]["date"].values.astype(str)
+            similar_charts_scaled[i].loc[:,"date"]=similar_charts_scaled[i]["date"].values.astype(str)
+            similar_chart_json[f"No{i+1}"]={
+                "original":similar_charts[i].to_dict(),
+                "scaled":similar_charts_scaled[i].to_dict(),
+                }
+        similar_chart_json=json.dumps(similar_chart_json,ensure_ascii=False)
+
+        ohlc["date"]=ohlc["date"].astype(str) #時間を文字列に変換.datetimeのままjsonにするとunixになってしまう.
+        ##
+        
+        similar_canvas_ids=[f"canvas-No{i+1}" for i in np.arange(len(similar_charts),dtype=int)]
+        similar_button_ids=[f"button-No{i+1}" for i in range(len(similar_canvas_ids))]
+
         params={
             "forms":Form(),
-            "msg":"",
-            "chart":{},
+            "chart":ohlc.to_json(),
+            "similar_chart":similar_chart_json,
+            "similar_canvas_ids":similar_canvas_ids,
+            "similar_button_ids":similar_button_ids,
         }
         return render(request=request,template_name="main/index.html",context=params)
     
+
     def post(self,request):
 
         print(request.POST)
@@ -50,8 +95,6 @@ class IndexView(TemplateView):
         pair=Pair.objects.filter(market=market,pair=request_cp["pair"])[0] #今選択中の通貨ペア
         self.__create_ohlc(pair=pair) #更新があるときは新たなレコードを作成
         ##
-
-        self.__set_date_range(pair=pair,form=_form)
 
         ##選択した通貨ペアをテーブルから読みだす
         ohlc=read_frame(
@@ -93,7 +136,6 @@ class IndexView(TemplateView):
 
         params={
             "forms":_form,
-            "msg":f"{request_cp['market']},{request_cp['pair']},{request_cp['date']}",
             "chart":ohlc.to_json(),
             "similar_chart":similar_chart_json,
             "similar_canvas_ids":similar_canvas_ids,
@@ -167,7 +209,3 @@ class IndexView(TemplateView):
             ##
         ##
             
-    def __set_date_range(self,pair,form:Form):
-        latest=OHLC.objects.filter(pair=pair).aggregate(Max("date"))["date__max"]
-        form.fields["date"].widget.attrs["max"]=latest
-        

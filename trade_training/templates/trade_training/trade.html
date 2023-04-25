@@ -1,129 +1,62 @@
+{% extends "main/base.html" %}
 {%load static%}
-<!doctype html>
-<html lang="ja">
-<head>
-    <meta charset="utf-8">
-    <title>Trade Training</title>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'trade_training/css/style.css' %}">
-    <link href="https://fonts.googleapis.com/css?family=Anton" rel="stylesheet">
-    <!-- chart.jsの読み込み -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
-</head>
-<body>
-    <!-- Header Start -->
-    <header class="site-header">
-        <a class="header-title" href="#">Similar Chart</a>
-    </header>
-    <!-- Header End -->
+{% block css-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'trade_training/css/style.css' %}">
+{% endblock %}
 
-    <div class="wrapper">
-        <h1>仮想トレード</h1>
-        <div class="container">
-            <form action="{% url 'trade' %}" method="post" name="trade_form">
-                <table>
-                    {% csrf_token %}
-                    {{market_pair_form.as_table}}
-                </table>
+{% block main-content %}
+<h1>仮想トレード</h1>
+<div class="contents">
+    <form action="{% url 'trade' %}" method="post" name="trade_form">
+        <table>
+            {% csrf_token %}
+            {{market_pair_form.as_table}}
+        </table>
 
-                <h2>残高</h2>
-                <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+        <h2>残高</h2>
+        <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
 
-                <h3>BID/ASK ({{quote.datetime|date:"Y/m/d H:i"}})</h3>
-                <div class="flex-quote">
-                    <div class="quote">
-                        <div>BID<br>(売値)</div>
-                        <div>{{user_currency.currency.symbol}}{{quote.bid}}</div>
-                    </div>
-                    <div class="quote">
-                        <div>ASK<br>(買値)</div>
-                        <div>{{user_currency.currency.symbol}}{{quote.ask}}</div>
-                    </div>
-                </div>
-
-                <table>
-                    {% csrf_token %}
-                    {{trade_form.as_table}}
-                    <tr>
-                        <td></td>
-                        <td>
-                            <input type="submit" value="注文" id="commit-button">
-                        </td>
-                    </tr>
-                </table>
-            </form>
+        <h3>BID/ASK ({{quote.datetime|date:"Y/m/d H:i"}})</h3>
+        <div class="flex-quote">
+            <div class="quote">
+                <div>BID<br>(売値)</div>
+                <div>{{user_currency.currency.symbol}}{{quote.bid}}</div>
+            </div>
+            <div class="quote">
+                <div>ASK<br>(買値)</div>
+                <div>{{user_currency.currency.symbol}}{{quote.ask}}</div>
+            </div>
         </div>
-    </div>
 
-    <script>
+        <table>
+            {% csrf_token %}
+            {{trade_form.as_table}}
+            <tr>
+                <td></td>
+                <td>
+                    <input type="submit" value="注文" id="commit-button">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+{% endblock %}
 
-        console.log('{{user_currency}}');
+{% block js-content %}
+<script type="text/javascript">
+    var crypto_lot='{{user_coin.lot}}'
+    var crypto_price=parseFloat(crypto_lot)*parseFloat('{{quote.bid}}'); //今持ってるコインの価値
+    var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
+    var pair_name='{{user_coin.pair.pair}}'.toUpperCase();
 
-        // marketかpairが変更されたら更新
-        const market_form=document.getElementById("id_market");
-        market_form.addEventListener("change",function(){
-            document.trade_form.submit();
-        });
+    var name_currency='{{user_currency.currency.currency}}';
+    var symbol_currency='{{user_currency.currency.symbol}}'
+    var label_currency=name_currency+" "+symbol_currency+'{{user_currency.price}}';
 
-        const pair_form=document.getElementById("id_pair");
-        pair_form.addEventListener("change",function(){
-            document.trade_form.submit();
-        });
-
-        const commit_button=document.getElementById("commit-button");
-        commit_button.addEventListener("click",function(){
-            commit_form=document.getElementById("id_is_commit");
-            commit_form.value="True";
-        });
-
-        // START 棒グラフの描画
-        var crypto_lot='{{user_coin.lot}}'
-        var crypto_price=parseFloat(crypto_lot)*parseFloat('{{quote.bid}}'); //今持ってるコインの価値
-        var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
-        var pair_name='{{user_coin.pair.pair}}'.toUpperCase();
-
-        var name_currency='{{user_currency.currency.currency}}';
-        var symbol_currency='{{user_currency.currency.symbol}}'
-        var label_currency=name_currency+" "+symbol_currency+'{{user_currency.price}}';
-
-        var name_crypto=pair_name.replace(name_currency,"");
-        var label_crypto=name_crypto+" "+crypto_lot+" ( "+symbol_currency+String(crypto_price)+" ) ";
-
-        const pair_bar_ctx="pair-bar";
-        var pair_bar=new Chart(pair_bar_ctx,{
-            type:"horizontalBar",
-            data:{
-                labels:[pair_name],
-                datasets:[
-                    {
-                        label:label_crypto,
-                        data:[crypto_price],
-                        backgroundColor:"red",
-                    },{
-                        label:label_currency,
-                        data:[currency],
-                        backgroundColor:"blue"
-                    }
-                ]
-            },
-            options:{
-                scales:{
-                    xAxes:[
-                        {
-                            stacked:true,
-                        },
-                    ],
-                    yAxes:[
-                        {
-                            stacked:true,
-                        },
-                    ],
-                }
-            }
-        });
-        // END 棒グラフの描画
-    </script>
-</body>
-
-</html>
+    var name_crypto=pair_name.replace(name_currency,"");
+    var label_crypto=name_crypto+" "+crypto_lot+" ( "+symbol_currency+String(crypto_price)+" ) ";
+</script>
+<script src="{% static 'trade_training\js\script.js' %}"></script>
+{% endblock %}

@@ -72,6 +72,57 @@ class HomeView(TemplateView):
         return render(request=request,template_name="home/home.html",context=params)
     
 
+    def post(self,request):
+
+        now=datetime.now() #現在時刻
+
+        user=CustomUser.objects.get(id=request.user.id) #ユーザー情報
+        
+        market=Market.objects.get(market=request.POST["market"]) #formで選択したmarket
+        currency_list=get_currency_list(market=market) #取引所が扱っている通貨リスト
+        currency=Currency(currency=request.POST["currency"])
+
+        #取り扱っていない通貨が選択されたら,扱っているものに変える
+        request_post=request.POST.copy()
+        if not currency.id in [item.id for item in currency_list]:
+            request_post["currency"]=currency_list[0].currency
+            currency=currency_list[0]
+        market_currency_form=MarketCurrencyForm(request_post)
+        market_currency_form.fields["currency"].choices=[(item.currency,item.currency) for item in currency_list]
+        market_currency_form.base_fields["currency"].choices=[(item.currency,item.currency) for item in currency_list]
+
+        #現在のユーザーの資産情報の取得  
+        user=CustomUser.objects.get(id=request.user.id)
+        net_asset=UserNetAsset.objects.filter(user=user,market=market).order_by("date").last() #最新の情報を取得
+        user_currency=UserCurrnecy.objects.get(net_asset=net_asset,currency=currency)
+        user_coins={}
+        for user_coin in UserCoin.objects.filter(net_asset=net_asset):
+            if currency.currency.casefold() in user_coin.pair.pair.casefold():
+
+                #気配値情報の新規登録or更新
+                init_update_quote(market=market,pair=user_coin.pair,now=now) 
+                quote=BidAsk.objects.get(pair=user_coin.pair) #更新後のデータを取得
+                user_coins[user_coin.pair.pair]={
+                    "bid":quote.bid,"lot":user_coin.lot
+                }                
+        user_coins=json.dumps(user_coins,ensure_ascii=False)
+
+        #ユーザーの資産の遷移情報の取得
+        chart_dates,user_chart=get_user_chart(
+            user=user,market=market,
+            currency=currency,now=now
+        )
+
+        params={
+            "market_currency_form":MarketCurrencyForm(request_post),
+            "user_currency":user_currency,
+            "user_coins":user_coins,
+            "user_chart":user_chart,
+            "chart_dates":chart_dates,
+        }
+
+        return render(request=request,template_name="home/home.html",context=params)
+
 def get_user_chart(user:CustomUser,market:Market,currency:Currency,now:datetime):
     """
     ユーザーの資産遷移情報を計算し取得する関数
@@ -91,11 +142,12 @@ def get_user_chart(user:CustomUser,market:Market,currency:Currency,now:datetime)
             user_coins_chart=np.array(UserCoin.objects.filter(net_asset__in=net_asset_chart)\
                 .filter(pair=pair).order_by("net_asset__date").values_list("lot"))
             ohlc=np.array(OHLC.objects.filter(pair=pair)\
-                .filter(date__in=UserNetAsset.objects.filter(user=user,market=market).values("date"))\
+                .filter(date__in=UserNetAsset.objects.filter(user=user,market=market).values_list("date"))\
                 .order_by("date").values_list("close"))
+            
             user_currency_chart+=user_coins_chart*ohlc
         user_chart=pd.Series(data=user_currency_chart.flatten(),name="user_chart").to_json()
-        print(user_chart)
+        
     else: #まだ今日の日足が登録されていない時
         user_currency_chart=np.array(UserCurrnecy.objects.filter(net_asset__in=net_asset_chart,currency=currency)\
             .order_by("net_asset__date").values_list("price"))
@@ -105,6 +157,7 @@ def get_user_chart(user:CustomUser,market:Market,currency:Currency,now:datetime)
             init_update_quote(market=market,pair=pair,now=now) 
             quote=BidAsk.objects.get(pair=pair) #更新後のデータを取得
             bid=np.array(quote.bid).reshape(1,1) #これを今の価格とする
+
             user_coins_chart=np.array(UserCoin.objects.filter(net_asset__in=net_asset_chart)\
                 .filter(pair=pair).order_by("net_asset__date").values_list("lot"))
             ohlc=np.array(OHLC.objects.filter(pair=pair)\
@@ -112,8 +165,8 @@ def get_user_chart(user:CustomUser,market:Market,currency:Currency,now:datetime)
                 .order_by("date").values_list("close"))
             ohlc=np.concatenate([ohlc,bid],axis=0) #現在の価格を追加
             user_currency_chart+=user_coins_chart*ohlc
+
         user_chart=pd.Series(data=user_currency_chart.flatten(),name="user_chart").to_json()
-        print(user_chart)
 
     return chart_dates,user_chart
 
