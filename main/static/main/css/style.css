@@ -3,6 +3,8 @@ body{
     margin: 0;
     padding: 0;
     color: #666666;
+    font-family: 'Noto Serif JP', sans-serif;
+    font-weight:lighter;
 }
 
 
@@ -18,43 +20,70 @@ header{
     position: fixed;
 }
 
-header .header-title{
+nav .header-title{
     padding-left: 30px;
-    font-family: "Anton",sans-serif;
     font-size: x-large;
     color: black;
     /* border-left: 20px solid #666666; */
 }
 
+nav{
+    display: flex;
+}
+
+.navbar-brand:hover{
+    border-bottom: 1px solid;
+    font-weight: bold;
+}
+
+ul{
+    display: flex;
+    padding-left: 50%;
+}
+
 h1{
     padding-left: 50px;
     padding-top: 10px;
-    font-family: "Anton",sans-serif;
     transform:scaleY(0.95);
     border-bottom: solid;
     border-color: #666666;
 }
 
-label{
-    font-weight: bold;
+h3{
+    padding-left: 15px;
+    padding-top: 5px;
+}
+
+.document{
+    background-color: white;
+    margin: 30px 15px;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.analysis-form{
+    background-color: white;
+    max-height: fit-content;
+    margin: 15px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.row{
+    padding: 1px 0px;
 }
 
 .side-bar p {
     text-align: center;
     width: 80%;
-    font-weight: bold;
     border-bottom: 1px solid #666666;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    padding: 5px;
 }
 
-.side-bar p::first-letter{
-    color: #666666;
-    font-size: 120%;
-}
 
 .wrapper{
     max-width: 960px;
-    margin-top: 50px;
+    margin-top: 75px;
     margin-bottom: -25px;
     margin-left: auto;
     margin-right: auto;
@@ -62,34 +91,27 @@ label{
     background-color: 	#ECECEC;
     top:0;
 }
-.container{
+.contents{
     padding-left: 50px;
     padding-right: 50px;
 }
 
-.flex-form{
-    display: flex;
-    flex-wrap: wrap;
-    background-color: white;
-    padding: 10px;
-    margin: 15px;
-    width: 94%;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-}
 
 .main{
     background-color: white;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .side-bar{
     background-color: white;
+    border-radius: 8px;
 }
 
 @media screen and (min-width:801px){
     .flex-chart{
         display: flex;
         display: -webkit-flex;
-        max-height: 900px;
         padding-top: 0px;
     }
     .main{
@@ -104,7 +126,7 @@ label{
         overflow-y: scroll;
         margin: 15px;
         max-width: 240px;
-        
+        padding-bottom: 15px;
     }
     .similar-chart{
         width: 80%;
@@ -116,12 +138,14 @@ label{
     width: 105%;
     border-bottom: 15px solid #ECECEC;
     padding-top: 2%;
+    margin-left: -10px;
 }
 
 .chart-boder-l{
     width: 105%;
     border-top: 15px solid #ECECEC;
     padding-bottom: 2%;
+    margin-left: -10px;
 }
 
 .main-canvas{
@@ -130,4 +154,9 @@ label{
 
 .similar-chart canvas:hover{
     box-shadow: 0 14px 20px -4px rgba(0,0,0,0.25);
+}
+
+.nav-item:hover{
+    border-bottom: 1px solid;
+    font-weight: bold;
 }
