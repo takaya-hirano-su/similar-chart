@@ -1,5 +1,5 @@
 body{
-    background-color: #ECECEC;
+    background-color: #f5f4f4;
     margin: 0;
     padding: 0;
     color: #666666;
@@ -42,11 +42,12 @@ ul{
 }
 
 h1{
-    padding-left: 50px;
+    padding-left: 10px;
     padding-top: 10px;
-    transform:scaleY(0.95);
-    border-bottom: solid;
+    padding-bottom: 10px;
+    border-bottom: double;
     border-color: #666666;
+    text-align: left;
 }
 
 h3{
@@ -56,12 +57,12 @@ h3{
 
 .document{
     background-color: white;
-    margin: 30px 15px;
+    margin: 40px 15px;
     padding: 10px 20px;
     border-radius: 8px;
 }
 
-.analysis-form{
+.similar-chart-block{
     background-color: white;
     max-height: fit-content;
     margin: 15px;
@@ -76,7 +77,6 @@ h3{
 .side-bar p {
     text-align: center;
     width: 80%;
-    border-bottom: 1px solid #666666;
     padding: 5px;
 }
 
@@ -88,7 +88,7 @@ h3{
     margin-left: auto;
     margin-right: auto;
     padding-bottom: 100px;
-    background-color: 	#ECECEC;
+    background-color: 	#f5f4f4;
     top:0;
 }
 .contents{
@@ -108,25 +108,28 @@ h3{
     border-radius: 8px;
 }
 
-@media screen and (min-width:801px){
+@media (min-width:801px){
     .flex-chart{
         display: flex;
-        display: -webkit-flex;
+        /* display: -webkit-flex; */
         padding-top: 0px;
+        width: 100%;
+        max-height: 970px;
     }
     .main{
-        -webkit-flex:3;
+        /* -webkit-flex:3; */
         margin-left: 15px;
         margin-right: 15px;
         margin-top: 15px;
+        width: 75%;
 
     }
     .side-bar{
-        -webkit-flex:1;
+        /* -webkit-flex:1; */
         overflow-y: scroll;
         margin: 15px;
-        max-width: 240px;
         padding-bottom: 15px;
+        width: 25%;
     }
     .similar-chart{
         width: 80%;
@@ -134,16 +137,46 @@ h3{
     }
 }
 
+@media (max-width:800px){
+
+    .flex-chart{
+        display: flex;
+        flex-direction: column;
+    }
+    .side-bar{
+        width: 100%;
+        margin-top: 30px;
+        display: flex;
+        overflow-x: scroll;
+        max-height: fit-content;
+    }
+
+    .similar-chart{
+        height: 100%;
+        padding: 20px 10px;
+        
+    }
+
+    .main{
+        margin-top: 30px;
+    }
+
+    .side-bar p{
+        font-size: 0px;
+        visibility: hidden;
+    }
+}
+
 .chart-boder-u{
-    width: 105%;
-    border-bottom: 15px solid #ECECEC;
+    width: 108%;
+    border-bottom: 15px solid #f5f4f4;
     padding-top: 2%;
     margin-left: -10px;
 }
 
 .chart-boder-l{
-    width: 105%;
-    border-top: 15px solid #ECECEC;
+    width: 108%;
+    border-top: 15px solid #f5f4f4;
     padding-bottom: 2%;
     margin-left: -10px;
 }

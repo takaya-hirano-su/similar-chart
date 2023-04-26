@@ -12,7 +12,7 @@
         <p>選択した日付までのチャートと類似する過去チャートをAIによって分析し表示します。</p>
         <p>類似する過去チャートの値動きを見ることで、今後の値動き予測の参考にすることが可能です。</p>
     </div>
-    <div class="analysis-form">
+    <div class="similar-chart-block">
         <h2>分析設定</h2>
         <form action="{% url 'index' %}" method="post" name="mainform">
             <div class="container">
@@ -35,14 +35,14 @@
         <div class="main" id="id-analysis">
             <h3>分析結果</h3>
             <div class="main-canvas">
-                <canvas id="main-canvas" width="300" height="200">No chart...</canvas>
+                <canvas id="main-canvas" width="30" height="20">No chart...</canvas>
             </div>
             <div class="chart-boder-u"></div>
             <div class="chart-boder-l"></div>
 
             <h3>類似チャート</h3>
             <div class="main-canvas">
-                <canvas id="selected-canvas" width="300" height="200">No chart...</canvas>
+                <canvas id="selected-canvas" width="30" height="20">No chart...</canvas>
             </div>
         </div>
 
@@ -50,7 +50,7 @@
             <p>類似度ランキング</p>
             {% for canvas_id in similar_canvas_ids %}
             <div class="similar-chart">
-                <canvas id='{{canvas_id|safe}}' width="300" height="200">No chart...</canvas>
+                <canvas id='{{canvas_id|safe}}' width="30" height="25">No chart...</canvas>
             </div>
             {% endfor %}
         </div>

@@ -4,6 +4,11 @@ from main.models import Market,Pair
 
 class MarketCurrencyForm(forms.Form):
 
+    def __init__(self,*args,**kwargs):
+        super(MarketCurrencyForm,self).__init__(*args,**kwargs)
+        self.fields["market"].widget.attrs["class"]="form-select"
+        self.fields["currency"].widget.attrs["class"]="form-select"
+
     market_init=Market.objects.all().first() #1つ目を初期化用の取引所とする
     market_choices=[(item.market,item.market) for item in Market.objects.all()]
     market=forms.ChoiceField(choices=market_choices,initial=market_choices[0],label="取引所")
@@ -18,6 +23,12 @@ class MarketCurrencyForm(forms.Form):
 
 
 class DepositWithdrawForm(forms.Form):
+
+    def __init__(self,*args,**kwargs):
+        super(DepositWithdrawForm,self).__init__(*args,**kwargs)
+        self.fields["action"].widget.attrs["class"]="form-select"
+        self.fields["price"].widget.attrs["class"]="form-control"
+
     action=forms.ChoiceField(
         choices=[("deposit","入金"),("withdraw","出金")],
         initial=("deposit","入金"),
