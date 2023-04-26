@@ -79,6 +79,7 @@ function drawChart(ctx,canvas,labels,datasets,is_axes){
             legend:{
                 display:window.innerWidth>600,
             },
+            // maintainAspectRatio: false ,
         }
     });
 }

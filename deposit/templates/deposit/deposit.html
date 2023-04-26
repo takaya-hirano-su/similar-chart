@@ -8,26 +8,50 @@
 {% block main-content %}
 <h1>入出金</h1>
 <div class="contents">
+
+    <div class="document">
+        <p>トレード練習で使用するお金を入出金できます。</p>
+        <p>もちろん仮想的な入出金なので実際の料金はかかりません。</p>
+    </div>
+
     <form action="{% url 'deposit' %}" method="post" name="deposit_form">
-        <table>
-            {% csrf_token %}
-            {{market_currency_form.as_table}}
-        </table>
 
-        <h2>残高</h2>
-        <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+        <div class="similar-chart-block">
+            <h3>取引所選択</h3>
+            <div class="container">
+                {% csrf_token %}
+                {% for field in market_currency_form %}
+                <div class="row">
+                    <div class="col-sm-3">{{field.label_tag}}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
 
-        <h2>入金/出金</h2>
-        <table>
-            {% csrf_token %}
-            {{deposit_withdraw_form.as_table}}
-            <tr>
-                <td></td>
-                <td>
-                    <input type="submit" value="確定" id="commit-button">
-                </td>
-            </tr>
-        </table>
+        <div class="similar-chart-block">
+            <h3>残高</h3>
+            <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+        </div>
+
+        <div class="similar-chart-block">
+            <h3>入出金</h3>
+            <div class="container">
+                {% csrf_token %}
+                {% for field in deposit_withdraw_form %}
+                <div class="row">
+                    <div class="col-sm-3">{% if field.is_hidden != True %}{{field.label_tag}}{% endif %}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary" id="commit-button">確定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </form>
 </div>
 {% endblock %}

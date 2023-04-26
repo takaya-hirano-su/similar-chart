@@ -1,6 +1,32 @@
 
-.flex-quote{
-    display: flex;
-    text-align: center;
-    justify-content: center;
+@media (min-width:601px){
+    .flex-quote{
+        display: flex;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width:600px){
+    .flex-quote{
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+}
+
+.quote{
+    padding: 10px 5%;
+    font-size: 200%;
+}
+
+.quote .bid{
+    color: #FF7F50;
+    font-weight: bold;
+}
+
+.quote .ask{
+    color: #20B2AA;
+    font-weight: bold;
 }

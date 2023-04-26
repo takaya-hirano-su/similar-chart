@@ -3,21 +3,44 @@
 
 {% block css-content %}
 <link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'home/css/style.css' %}">
 {% endblock %}
 
 {% block main-content %}
 <h1>総資産</h1>
 <div class="contents">
+
+    <div class="document">
+        <p>トレード練習における資産推移を表示します。</p>
+        <p>取引所を選択してご確認ください。</p>
+    </div>
+
     <form action="{% url 'home' %}" method="post" name="home_form">
-        <table>
-            {% csrf_token %}
-            {{market_currency_form.as_table}}
-        </table>
+        <div class="similar-chart-block">
+            <h3>取引所選択</h3>
+            <div class="container">
+                {% csrf_token %}
+                {% for field in market_currency_form %}
+                <div class="row">
+                    <div class="col-sm-3">{{field.label_tag}}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </form>
-    <h2>残高</h2>
-    <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
-    <h2>資産推移</h2>
-    <canvas id="user-chart">No Data...</canvas>
+
+    <div class="similar-chart-block">
+        <h3>残高</h3>
+        <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+    </div>
+
+    <div class="similar-chart-block">
+        <h3>資産推移</h3>
+        <div class="net-asset-chart">
+            <canvas id="user-chart" width="300" height="200">No Data...</canvas>
+        </div>
+    </div>
 </div>
 {% endblock %}
 

@@ -7,39 +7,67 @@
 {% endblock %}
 
 {% block main-content %}
-<h1>仮想トレード</h1>
+<h1>トレード練習</h1>
 <div class="contents">
+
+    <div class="document">
+        <p>チャートの分析結果を利用してトレードの練習ができます。</p>
+        <p>トレード練習で使うお金は<a href="{% url 'deposit'%}">こちら</a>から追加してください。</p>
+    </div>
+
     <form action="{% url 'trade' %}" method="post" name="trade_form">
-        <table>
-            {% csrf_token %}
-            {{market_pair_form.as_table}}
-        </table>
 
-        <h2>残高</h2>
-        <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
-
-        <h3>BID/ASK ({{quote.datetime|date:"Y/m/d H:i"}})</h3>
-        <div class="flex-quote">
-            <div class="quote">
-                <div>BID<br>(売値)</div>
-                <div>{{user_currency.currency.symbol}}{{quote.bid}}</div>
-            </div>
-            <div class="quote">
-                <div>ASK<br>(買値)</div>
-                <div>{{user_currency.currency.symbol}}{{quote.ask}}</div>
+        <div class="similar-chart-block">
+            <h3>取引所設定</h3>
+            <div class="container">
+                {% csrf_token %}
+                {% for field in market_pair_form %}
+                <div class="row">
+                    <div class="col-sm-3">{{field.label_tag}}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+                {% endfor %}
             </div>
         </div>
 
-        <table>
-            {% csrf_token %}
-            {{trade_form.as_table}}
-            <tr>
-                <td></td>
-                <td>
-                    <input type="submit" value="注文" id="commit-button">
-                </td>
-            </tr>
-        </table>
+        <div class="similar-chart-block">
+            <h3>残高</h3>
+            <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+        </div>
+
+        <div class="similar-chart-block">
+            <h3>現在のBID/ASK</h3> 
+            <p>({{quote.datetime|date:"Y/m/d H:i"}})</p>
+            <div class="flex-quote">
+                <div class="quote">
+                    <div class="bid">BID<br>(売値)</div>
+                    <div>{{user_currency.currency.symbol}}{{quote.bid}}</div>
+                </div>
+                <div class="quote">
+                    <div class="ask">ASK<br>(買値)</div>
+                    <div>{{user_currency.currency.symbol}}{{quote.ask}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="similar-chart-block">
+            <h3>仮想売買</h3>
+            <div class="container">
+                {% csrf_token %}
+                {% for field in trade_form %}
+                <div class="row">
+                    <div class="col-sm-3">{% if field.is_hidden != True %}{{field.label_tag}}{% endif %}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary" id="commit-button">注文</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </form>
 </div>
 {% endblock %}
