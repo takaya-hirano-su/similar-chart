@@ -131,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'UTC'
 
@@ -160,6 +160,8 @@ AUTHENTICATION_BACKENDS=(
     "django.contrib.auth.backends.ModelBackend",
 )
 ACCOUNT_AUTHENTICATION_METHOD="email"
+
+ACCOUNT_EMAIL_VERIFICATION="mandatory" #メールアドレスを確認してもらう
 ACCOUNT_EMAIL_REQUIRED=True
 
 LOGIN_REDIRECT_URL="index"
@@ -175,4 +177,14 @@ EMAIL_PORT=587
 EMAIL_HOST_USER="code.lab.200011@gmail.com"
 EMAIL_HOST_PASSWORD="bofydhcpoorhbqah"
 EMAIL_USE_TLS=True
+
+ACCOUNT_FORMS = {
+    'signup': 'accounts.forms.CustomSignupForm',
+    'login': 'accounts.forms.CustomLoginForm',
+    'reset_password': 'accounts.forms.CustomResetPasswordForm',
+    'reset_password_from_key': 'accounts.forms.CustomResetPasswordKeyForm',
+    'change_password': 'accounts.forms.CustomChangePasswordForm',
+    'add_email': 'accounts.forms.CustomAddEmailForm',
+    'set_password': 'accounts.forms.CustomSetPasswordForm',
+}
 #--

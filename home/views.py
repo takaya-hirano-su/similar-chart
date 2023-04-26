@@ -6,6 +6,7 @@ from datetime import datetime
 import json
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 
 from deposit.forms import MarketCurrencyForm
 from main.models import Market,Pair,OHLC
@@ -163,7 +164,10 @@ def get_user_chart(user:CustomUser,market:Market,currency:Currency,now:datetime)
             ohlc=np.array(OHLC.objects.filter(pair=pair)\
                 .filter(date__in=UserNetAsset.objects.filter(user=user,market=market).values("date"))\
                 .order_by("date").values_list("close"))
-            ohlc=np.concatenate([ohlc,bid],axis=0) #現在の価格を追加
+            if len(ohlc)==0:
+                ohlc=deepcopy(bid)
+            else:
+                ohlc=np.concatenate([ohlc,bid],axis=0) #現在の価格を追加
             user_currency_chart+=user_coins_chart*ohlc
 
         user_chart=pd.Series(data=user_currency_chart.flatten(),name="user_chart").to_json()
