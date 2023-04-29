@@ -28,9 +28,9 @@ class MainConfig(AppConfig):
         print("=============")
         ##
 
-        update_ohlc() #起動時に一度OHLCレコ―ドを追加する(あれば) 
+        # update_ohlc() #起動時に一度OHLCレコ―ドを追加する(あれば) 
 
-        periodic_update_ohlc() ##OHLCテーブルの定期更新
+        # periodic_update_ohlc() ##OHLCテーブルの定期更新
 
 
 def update_ohlc():

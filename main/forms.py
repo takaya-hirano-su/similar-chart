@@ -20,7 +20,6 @@ class Form (forms.Form):
         self.fields["similar_chart_num"].widget.attrs["class"]="form-control"
 
         
-
     market_list=[(item.market,item.market) for item in Market.objects.all()]
     market=forms.ChoiceField(choices=market_list,label="取引所",initial=market_list[0])
     
