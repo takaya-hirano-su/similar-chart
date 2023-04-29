@@ -9,6 +9,12 @@
 <h1>入出金</h1>
 <div class="contents">
 
+    {% if error_msg != "" %}
+    <div class="document">
+        <div class="warning">!! {{error_msg}} !!</div>
+    </div>
+    {% endif %}
+
     <div class="document">
         <p>トレード練習で使用するお金を入出金できます。</p>
         <p>もちろん仮想的な入出金なので実際の料金はかかりません。</p>
@@ -31,7 +37,7 @@
 
         <div class="similar-chart-block">
             <h3>残高</h3>
-            <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+            <canvas id="pair-bar" width="800" height="130">No Data...</canvas>
         </div>
 
         <div class="similar-chart-block">
@@ -61,7 +67,7 @@
 var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
 var name_currency='{{user_currency.currency.currency}}';
 var symbol_currency='{{user_currency.currency.symbol}}'
-var label_currency=name_currency+" "+symbol_currency+'{{user_currency.price}}';
+var label_currency=name_currency+" "+symbol_currency+parseFloat('{{user_currency.price}}').toFixed(2);
 var user_coins=JSON.parse('{{user_coins|safe}}');
 </script>
 <script src="{% static 'deposit/js/script.js' %}"></script>

@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% load i18n %}
+{% load account %}
+{% load static %}
+
+{% block css-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/style.css' %}">
+{% endblock %}
+{% block main-content %}
+<h1>メールアドレスの確認</h1>
+<div class="contents">
+    <div class="similar-chart-account-form">
+        {% if confirmation %}
+        {% user_display confirmation.email_address.user as user_display %}
+        <p>登録されたメールアドレス<a href="malito:{{email}}">{{email}}</a>が{{user_display}}様のものであることを確認してください。</p>
+        <p>問題がないようでしたら以下の確認ボタンをクリックしてください。</p>
+        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+            {% csrf_token %}
+            <button type="submit" class="button secondaryAction">確認</button>
+        </form>
+
+        {% else %}
+        {% url 'account_email' as email_url %}
+        <p>リンクの有効期限が切れています。<a href="{{email_url}}">こちら</a>から再申請してください。</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

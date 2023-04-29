@@ -1,0 +1,10 @@
+.similar-chart-account-form{
+    background-color: white;
+    max-height: fit-content;
+    margin: 15px;
+
+    padding: 10px;
+    border-radius: 8px;
+    min-width: 350px;
+
+}

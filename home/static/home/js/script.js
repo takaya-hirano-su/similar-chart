@@ -43,8 +43,8 @@ for(var i=0;i<keys.length;i++){
     var key=keys[i];
     var lot=parseFloat(user_coins[key]["lot"]); //数量
     var price=lot*parseFloat(user_coins[key]["bid"]); //価格
-    var name=key.toUpperCase().replace(name_currency,"");
-    var label=name+" "+String(lot)+" ( "+symbol_currency+String(price)+" )";
+    var key_name=key.toUpperCase().replace(name_currency,"");
+    var label=key_name+" "+String(lot.toFixed(4))+" ( "+symbol_currency+String(price.toFixed(2))+" )";
     datasets.push({
         label:label,
         data:[price],
@@ -79,11 +79,19 @@ var pair_bar=new Chart(pair_bar_ctx,{
 //資産チャートの描画
 
 console.log(chart_labels);
+
+var chart_labels_t=[];
+chart_labels.forEach(element => {
+    chart_labels_t.push(new Date(element));
+});
+
+console.log(chart_labels_t);
+
 const user_chart_ctx="user-chart";
 var user_chart=new Chart(user_chart_ctx,{
     type:"line",
     data:{
-        labels:chart_labels,
+        labels:chart_labels_t,
         datasets:[{
             data:user_chart_values,
             type:"line",
@@ -93,5 +101,18 @@ var user_chart=new Chart(user_chart_ctx,{
             borderColor:getColor(0,0.8),
             backgroundColor:getColor(0,0.8),
         }]
+    },
+    options:{
+        scales:{
+            xAxes:[{
+                type: 'time',
+                time: {
+                    unit:"day",
+                    displayFormats:{
+                        day:"YYYY/MM/DD",
+                    }
+                }
+            }],
+        }
     }
 });

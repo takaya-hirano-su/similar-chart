@@ -1,0 +1,59 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block css-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'accounts/css/style.css' %}">
+{% endblock %}
+{% block main-content %}
+<h1>サインアップ</h1>
+<p>アカウントは既にお持ちですか？ お持ちの場合は<a href="{{ login_url }}">こちら</a>からサインインしてください</p>
+
+<div class="contents">
+    <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        <div class="similar-chart-account-form">
+            {% csrf_token %}
+                
+            <div class="container">
+                <!-- エラー表示 -->
+                {% if form.non_field_errors %}
+                    {% for e in form.non_field_errors %}
+                        <div class="row">
+                            <div class="warning">{{e}}</div>
+                        </div>  
+                    {% endfor %}
+                {% endif %}
+
+                {% for field in form %}
+
+                <!-- エラー表示 -->
+                {% if field.errors %}
+                    {% for e in field.errors %}
+                    <div class="row">
+                        <div class="warning">!! {{e}} !!</div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-sm-3">{{field.label_tag}}</div>
+                    <div class="col-sm-9">{{field}}</div>
+                </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit">サインアップ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div> 
+{% endblock %}

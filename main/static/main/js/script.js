@@ -38,6 +38,12 @@ function drawChart(ctx,canvas,labels,datasets,is_axes){
     /**
      * キャンバスにチャートを描画する関数
      */
+
+    var labels_t=[]; //文字列の時間をdate型の時間に変換
+    labels.forEach(element=>{
+        labels_t.push(new Date(element));
+    });
+
     if(canvas){
         ctx.destroy();
     }
@@ -47,13 +53,27 @@ function drawChart(ctx,canvas,labels,datasets,is_axes){
             display: window.innerWidth>400,
             ticks:{
                 autoSkip:true,
-                maxTicksLimit:15,
+                maxTicksLimit:10,
+            },
+            type:"time",
+            time:{
+                unit:"day",
+                displayFormats:{
+                    day:"YYYY/MM/DD",
+                }
             }
         }];
         yAxes=[{}]
     }else{
         xAxes=[{
-            display:false
+            display:false,
+            type:"time",
+            time:{
+                unit:"day",
+                displayFormats:{
+                    day:"YYYY/MM/DD",
+                }
+            }
         }];
         yAxes=[{
             ticks:{
@@ -68,7 +88,7 @@ function drawChart(ctx,canvas,labels,datasets,is_axes){
     var canvas=new Chart(ctx,{
         type:"line",
         data:{
-            labels:labels,
+            labels:labels_t,
             datasets:datasets,
         },
         options:{

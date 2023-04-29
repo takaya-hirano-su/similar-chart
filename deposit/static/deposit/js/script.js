@@ -50,8 +50,8 @@ for(var i=0;i<keys.length;i++){
     var key=keys[i];
     var lot=parseFloat(user_coins[key]["lot"]); //数量
     var price=lot*parseFloat(user_coins[key]["bid"]); //価格
-    var name=key.toUpperCase().replace(name_currency,"");
-    var label=name+" "+String(lot)+" ( "+symbol_currency+String(price)+" )";
+    var key_name=key.toUpperCase().replace(name_currency,"");
+    var label=key_name+" "+String(lot.toFixed(4))+" ( "+symbol_currency+String(price.toFixed(2))+" )";
     datasets.push({
         label:label,
         data:[price],

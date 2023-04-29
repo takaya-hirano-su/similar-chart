@@ -1,0 +1,11 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block css-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+{% endblock %}
+{% block main-content %}
+<h1>メールアドレスを確認してください</h1>
+<P>ご登録されたメールアドレスに確認メールを送信いたしました。</P>
+<p>添付されたリンクをクリックしてwebサイトへの登録を承認してください。</p>
+{% endblock %}

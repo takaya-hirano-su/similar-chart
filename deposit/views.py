@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from datetime import datetime
 import json
 
-from .forms import MarketCurrencyForm,DepositWithdrawForm
+from .forms import MarketCurrencyForm,DepositWithdrawForm,custom_valid
 from main.models import Market,Pair 
 from accounts.models import CustomUser
 from trade_training.models import UserNetAsset,Currency,UserCurrnecy,UserCoin,BidAsk
@@ -59,6 +59,7 @@ class DepositView(TemplateView):
             "deposit_withdraw_form":DepositWithdrawForm(),
             "user_currency":user_currency,
             "user_coins":user_coins,
+            "error_msg":"",
         }
 
         return render(request=request,template_name="deposit/deposit.html",context=params)
@@ -97,11 +98,17 @@ class DepositView(TemplateView):
         
 
         #確定ボタンが押されたら,入金or出金
+        error_msg=""
         if request_post["is_commit"]=="True":
             if request_post["action"]=="deposit":
                 deposit(net_asset=net_asset,currency=currency,price=float(request_post["price"]))
+            
             elif request_post["action"]=="withdraw":
-                withdraw(net_asset=net_asset,currency=currency,price=float(request_post["price"]))
+                user_currency=UserCurrnecy.objects.get(net_asset=net_asset,currency=currency)
+                error_msg=custom_valid(price=float(request_post["price"]),user_currency=user_currency) #残高以上のお金を引き出そうとしていないかチェック
+                
+                if error_msg=="": #問題なければ引き出す
+                    withdraw(net_asset=net_asset,currency=currency,price=float(request_post["price"]))
         
         
         #最新の情報を取得
@@ -119,13 +126,14 @@ class DepositView(TemplateView):
         user_coins=json.dumps(user_coins,ensure_ascii=False)
         
 
-        request_post["price"]=0.0
+        request_post["price"]=0
         request_post["is_commit"]="False"
         params={
             "market_currency_form":market_currency_form,
             "deposit_withdraw_form":DepositWithdrawForm(request_post),
             "user_currency":user_currency,
             "user_coins":user_coins,
+            "error_msg":error_msg,
         }
 
         return render(request=request,template_name="deposit/deposit.html",context=params)

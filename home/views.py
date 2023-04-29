@@ -6,6 +6,7 @@ from datetime import datetime
 import json
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 
 from deposit.forms import MarketCurrencyForm
 from main.models import Market,Pair,OHLC
@@ -91,6 +92,11 @@ class HomeView(TemplateView):
         market_currency_form.fields["currency"].choices=[(item.currency,item.currency) for item in currency_list]
         market_currency_form.base_fields["currency"].choices=[(item.currency,item.currency) for item in currency_list]
 
+        #現在の資産情報の有無
+        is_current=True if not len(UserNetAsset.objects.filter(user=user,date=now.date(),market=market))==0 else False
+        if not is_current:
+            create_net_asset(user=user,now=now,market=market) #今日の情報がないときは新たに作成
+
         #現在のユーザーの資産情報の取得  
         user=CustomUser.objects.get(id=request.user.id)
         net_asset=UserNetAsset.objects.filter(user=user,market=market).order_by("date").last() #最新の情報を取得
@@ -163,7 +169,10 @@ def get_user_chart(user:CustomUser,market:Market,currency:Currency,now:datetime)
             ohlc=np.array(OHLC.objects.filter(pair=pair)\
                 .filter(date__in=UserNetAsset.objects.filter(user=user,market=market).values("date"))\
                 .order_by("date").values_list("close"))
-            ohlc=np.concatenate([ohlc,bid],axis=0) #現在の価格を追加
+            if len(ohlc)==0:
+                ohlc=deepcopy(bid)
+            else:
+                ohlc=np.concatenate([ohlc,bid],axis=0) #現在の価格を追加
             user_currency_chart+=user_coins_chart*ohlc
 
         user_chart=pd.Series(data=user_currency_chart.flatten(),name="user_chart").to_json()

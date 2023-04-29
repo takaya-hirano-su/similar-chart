@@ -10,6 +10,14 @@
 <h1>トレード練習</h1>
 <div class="contents">
 
+    {% if error_msg != "" %}
+        <div class="document">
+            <div class="warning">
+                !! {{error_msg}} !!
+            </div>
+        </div>
+    {% endif %}
+
     <div class="document">
         <p>チャートの分析結果を利用してトレードの練習ができます。</p>
         <p>トレード練習で使うお金は<a href="{% url 'deposit'%}">こちら</a>から追加してください。</p>
@@ -32,7 +40,7 @@
 
         <div class="similar-chart-block">
             <h3>残高</h3>
-            <canvas id="pair-bar" width="1000" height="130">No Data...</canvas>
+            <canvas id="pair-bar" width="800" height="130">No Data...</canvas>
         </div>
 
         <div class="similar-chart-block">
@@ -60,6 +68,7 @@
                     <div class="col-sm-9">{{field}}</div>
                 </div>
                 {% endfor %}
+
                 <div class="row">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="submit" class="btn btn-primary" id="commit-button">注文</button>
@@ -75,16 +84,16 @@
 {% block js-content %}
 <script type="text/javascript">
     var crypto_lot='{{user_coin.lot}}'
-    var crypto_price=parseFloat(crypto_lot)*parseFloat('{{quote.bid}}'); //今持ってるコインの価値
+    var crypto_price=(parseFloat(crypto_lot)*parseFloat('{{quote.bid}}')).toFixed(2); //今持ってるコインの価値
     var currency=parseFloat('{{user_currency.price}}'); //通貨(日本円とかUSドルとか)の残金
     var pair_name='{{user_coin.pair.pair}}'.toUpperCase();
 
     var name_currency='{{user_currency.currency.currency}}';
     var symbol_currency='{{user_currency.currency.symbol}}'
-    var label_currency=name_currency+" "+symbol_currency+'{{user_currency.price}}';
+    var label_currency=name_currency+" "+symbol_currency+parseFloat('{{user_currency.price}}').toFixed(2);
 
     var name_crypto=pair_name.replace(name_currency,"");
-    var label_crypto=name_crypto+" "+crypto_lot+" ( "+symbol_currency+String(crypto_price)+" ) ";
+    var label_crypto=name_crypto+" "+parseFloat(crypto_lot).toFixed(4)+" ( "+symbol_currency+String(crypto_price)+" ) ";
 </script>
 <script src="{% static 'trade_training\js\script.js' %}"></script>
 {% endblock %}
