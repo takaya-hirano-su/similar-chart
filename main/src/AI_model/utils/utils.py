@@ -1,7 +1,9 @@
 import sys
 from pathlib import Path
 param_path=str(Path(__file__).parent.parent.parent)
+root_path=str(Path(__file__).parent.parent.parent.parent)
 sys.path.append(param_path)
+sys.path.append(root_path)
 
 import pandas as pd
 import numpy as np
@@ -9,6 +11,7 @@ import psycopg2
 from datetime import date
 
 from params import DAYS
+from envs import *
 
 
 def to_tuple_form(values:np.ndarray):
@@ -35,10 +38,10 @@ def read_ohlc(date_thr:date,is_train=True)->list:
     """
 
     con=psycopg2.connect(
-        host="localhost",
-        user="postgres",
-        password="xe7z76fr",
-        database="similar_chart",
+        host=host,
+        user=user,
+        password=password,
+        database=database,
     )
 
 
