@@ -1,5 +1,5 @@
 from django import forms
-from trade_training.models import Currency
+from trade_training.models import Currency,UserCurrnecy
 from main.models import Market,Pair
 
 class MarketCurrencyForm(forms.Form):
@@ -34,5 +34,20 @@ class DepositWithdrawForm(forms.Form):
         initial=("deposit","入金"),
         label="入金 / 出金"
     )
-    price=forms.FloatField(min_value=0.0,initial=0.0,label="金額")
+    price=forms.FloatField(min_value=0.0001,initial=0,label="金額")
     is_commit=forms.BooleanField(initial="False",widget=forms.HiddenInput(),required=False)
+
+def custom_valid(price:float,user_currency:UserCurrnecy)->str:
+    """
+    お金を引き出すときに,持ち金以上を引き出そうとしていないかチェックする関数
+
+    :param float price: 引き出そうとしている金額
+    :param user_currency: 持ち金クラス
+    :type user_currency: UserCurrency
+
+    :return str error_msg: エラーメッセージ. エラーのないときは空
+    """
+
+    error_msg= "残高以上の金額は引き出せません。" if price>user_currency.price else ""
+
+    return error_msg

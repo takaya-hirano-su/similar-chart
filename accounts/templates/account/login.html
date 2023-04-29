@@ -12,22 +12,25 @@
 <div class="contents">
     <form class="login" method="POST" action="{% url 'account_login' %}">
         <div class="similar-chart-account-form">
+
+            <!-- エラー表示 -->
+            {% if form.non_field_errors %}
+                {% for e in form.non_field_errors %}
+                    <div class="warning">{{e}}</div>
+                {% endfor %}
+            {% endif %}
+
             <div class="container">
                 {% csrf_token %}
-
-                <!-- エラー表示 -->
-                {% if form.non_field_errors %}
-                <div class="row">
-                    {{form.non_field_errors}}
-                </div>
-                {% endif %}
 
                 {% for field in form %}
 
                 <!-- エラー表示 -->
                 {% if field.errors %}
                     {% for e in field.errors %}
-                    <div class="row">!! {{e}}</div>
+                    <div class="row">
+                        <div class="warning">!! {{e}} !!</div>
+                    </div>
                     {% endfor %}
                 {% endif %}
 

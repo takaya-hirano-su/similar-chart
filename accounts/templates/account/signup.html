@@ -17,18 +17,24 @@
             <div class="container">
                 <!-- エラー表示 -->
                 {% if form.non_field_errors %}
-                <div class="row">
-                    {{form.non_field_errors}}
-                </div>
+                    {% for e in form.non_field_errors %}
+                        <div class="row">
+                            <div class="warning">{{e}}</div>
+                        </div>  
+                    {% endfor %}
                 {% endif %}
-                
+
                 {% for field in form %}
+
                 <!-- エラー表示 -->
                 {% if field.errors %}
                     {% for e in field.errors %}
-                    <div class="row">!! {{e}}</div>
+                    <div class="row">
+                        <div class="warning">!! {{e}} !!</div>
+                    </div>
                     {% endfor %}
                 {% endif %}
+
                 <div class="row">
                     <div class="col-sm-3">{{field.label_tag}}</div>
                     <div class="col-sm-9">{{field}}</div>

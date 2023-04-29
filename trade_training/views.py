@@ -7,7 +7,7 @@ from datetime import datetime
 from copy import deepcopy
 
 from .src.crypto_watch_api import get_BID_ASK
-from .forms import *
+from .forms import TradeForm,MarketPairForm,custom_valid
 from main.models import Market,Pair
 from accounts.models import CustomUser
 from .models import BidAsk,UserNetAsset,UserCoin,UserCurrnecy,Currency
@@ -58,6 +58,7 @@ class TradeTrainingView(TemplateView):
             "quote":quote,
             "user_coin":user_coin,
             "user_currency":user_currency,
+            "error_msg":"",
         }
 
 
@@ -108,22 +109,39 @@ class TradeTrainingView(TemplateView):
         user_coin=UserCoin.objects.get(net_asset=net_asset,pair=pair)
         user_currency=UserCurrnecy.objects.get(net_asset=net_asset,currency=currency)
 
+        error_msg=""
         if request_post["is_commit"]=="True": #注文ボタンが押された時だけ,売買の処理をする
+
             if request_post["action"]=="buy":
-                action_buy(
-                    user_coin=user_coin,user_currency=user_currency,
-                    ask=quote.ask,lot=float(request_post["lot"])
-                    )
+
+                error_msg=custom_valid(
+                    action=request_post["action"],lot=float(request_post["lot"]),
+                    user_currency=user_currency,ask=quote.ask
+                ) #お金が足りてるかチェック
+
+                if error_msg=="": #お金がが足りてれば購入
+                    action_buy(
+                        user_coin=user_coin,user_currency=user_currency,
+                        ask=quote.ask,lot=float(request_post["lot"])
+                        )
+                    
             elif request_post["action"]=="sell":
-                action_sell(
-                    user_coin=user_coin,user_currency=user_currency,
-                    bid=quote.bid,lot=float(request_post["lot"])
-                    )
+
+                error_msg=custom_valid(
+                    action=request_post["action"],lot=float(request_post["lot"]),
+                    user_coin=user_coin
+                ) #コインが足りてるかチェック
+
+                if error_msg=="": #コインが足りてれば購入
+                    action_sell(
+                        user_coin=user_coin,user_currency=user_currency,
+                        bid=quote.bid,lot=float(request_post["lot"])
+                        )
             
         user_coin=UserCoin.objects.get(net_asset=net_asset,pair=pair)
         user_currency=UserCurrnecy.objects.get(net_asset=net_asset,currency=currency)
 
-        request_post["lot"]=0.0
+        request_post["lot"]=0
         request_post["is_commit"]="False"
         params={
             "market_pair_form":market_pair_form,
@@ -131,6 +149,7 @@ class TradeTrainingView(TemplateView):
             "quote":quote,
             "user_coin":user_coin,
             "user_currency":user_currency,
+            "error_msg":error_msg,
         }
 
         return render(request=request,template_name="trade_training/trade.html",context=params)

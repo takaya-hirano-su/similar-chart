@@ -92,6 +92,11 @@ class HomeView(TemplateView):
         market_currency_form.fields["currency"].choices=[(item.currency,item.currency) for item in currency_list]
         market_currency_form.base_fields["currency"].choices=[(item.currency,item.currency) for item in currency_list]
 
+        #現在の資産情報の有無
+        is_current=True if not len(UserNetAsset.objects.filter(user=user,date=now.date(),market=market))==0 else False
+        if not is_current:
+            create_net_asset(user=user,now=now,market=market) #今日の情報がないときは新たに作成
+
         #現在のユーザーの資産情報の取得  
         user=CustomUser.objects.get(id=request.user.id)
         net_asset=UserNetAsset.objects.filter(user=user,market=market).order_by("date").last() #最新の情報を取得

@@ -22,11 +22,9 @@ class IndexView(TemplateView):
 
         init_pair=Pair.objects.all()[0]
 
-        print(str(Form.date_latest))
-
         ##選択した通貨ペアをテーブルから読みだす
         ohlc=read_frame(
-            self.__read_ohlc(pair=init_pair,date=str(Form.date_latest),past_days=Form.init_days),
+            read_ohlc(pair=init_pair,date=str(Form.date_latest),past_days=Form.init_days),
             fieldnames=["pair","is_train_data","open","high","low","close","date"]
             )        
         
@@ -93,12 +91,11 @@ class IndexView(TemplateView):
 
         ##取引所における通貨ペアの取得＆更新
         pair=Pair.objects.filter(market=market,pair=request_cp["pair"])[0] #今選択中の通貨ペア
-        self.__create_ohlc(pair=pair) #更新があるときは新たなレコードを作成
         ##
 
         ##選択した通貨ペアをテーブルから読みだす
         ohlc=read_frame(
-            self.__read_ohlc(pair=pair,date=request_cp["date"],past_days=int(request_cp["past_days"])),
+            read_ohlc(pair=pair,date=request_cp["date"],past_days=int(request_cp["past_days"])),
             fieldnames=["pair","is_train_data","open","high","low","close","date"]
             )        
         
@@ -145,67 +142,59 @@ class IndexView(TemplateView):
         return render(request=request,template_name="main/index.html",context=params)
 
 
-    def __read_ohlc(self,pair:Pair,date:str,past_days:int):
-        """
-        dateからpast_days日前までのチャートを取得
+def read_ohlc(pair:Pair,date:str,past_days:int):
+    """
+    dateからpast_days日前までのチャートを取得
+    :param Pair pair: 通貨ペアのモデルクラス
+    :param str date: フォームで入力された日付
+    :param int past_days: フォームで入力された日数
+    """
+    ##date-DAYS(72日)~dateの範囲における通貨ペアを取得
+    date=datetime.strptime(date,"%Y-%m-%d")
+    before=datetime(year=date.year,month=date.month,day=date.day,hour=9)
+    after=before-timedelta(days=past_days-1)
+    ohlc=OHLC.objects\
+        .filter(pair=pair)\
+        .filter(date__gte=after.date())\
+        .filter(date__lte=before.date())\
+        .order_by("date")
+    ##
+    return ohlc
 
-        :param Pair pair: 通貨ペアのモデルクラス
-        :param str date: フォームで入力された日付
-        :param int past_days: フォームで入力された日数
-        """
 
-        ##date-DAYS(72日)~dateの範囲における通貨ペアを取得
-        date=datetime.strptime(date,"%Y-%m-%d")
-        before=datetime(year=date.year,month=date.month,day=date.day,hour=9)
-        after=before-timedelta(days=past_days-1)
-        ohlc=OHLC.objects\
-            .filter(pair=pair)\
-            .filter(date__gte=after.date())\
-            .filter(date__lte=before.date())\
-            .order_by("date")
-        ##
-
-        return ohlc
-
-    def __create_ohlc(self,pair:Pair):
-        """
-        通貨ペアのテーブルに更新があればレコードを追加する
-
-        :param Pair pair:通貨ペアのモデルクラス
-        """
-
-        chart=pd.DataFrame([])
-
-        latest:datetime=OHLC.objects.filter(pair=pair).aggregate(Max("date"))["date__max"] #最新データのdateを取得
-        dday=(datetime.now().date()-latest).days #最新データと今の日数差
-        if dday>0: #1日以上の差があるとき新しいデータを取得する
-            chart=get_chart(
-                market=pair.market.market,pair=pair.pair,
-                before=datetime.now(),
-                after=datetime(year=latest.year,month=latest.month,day=latest.day)-timedelta(days=1), #少し前まで検索しておく
-                periods=PERIODS
+def create_ohlc(pair:Pair):
+    """
+    通貨ペアのテーブルに更新があればレコードを追加する
+    :param Pair pair:通貨ペアのモデルクラス
+    """
+    chart=pd.DataFrame([])
+    latest:datetime=OHLC.objects.filter(pair=pair).aggregate(Max("date"))["date__max"] #最新データのdateを取得
+    dday=(datetime.now().date()-latest).days #最新データと今の日数差
+    if dday>0: #1日以上の差があるとき新しいデータを取得する
+        chart=get_chart(
+            market=pair.market.market,pair=pair.pair,
+            before=datetime.now(),
+            after=datetime(year=latest.year,month=latest.month,day=latest.day)-timedelta(days=1), #少し前まで検索しておく
+            periods=PERIODS
+        )
+        print(f"***new data***\n{chart}\n******")
+    ##取得したデータの保存
+    for _,c in (chart.iterrows()):
+        open=c["open"]
+        high=c["high"]
+        low=c["low"]
+        close=c["close"]
+        date=str(c["datetime"].date())
+        is_train_data=False
+        ###取得したデータのレコードが無ければ追加する
+        record=OHLC.objects.filter(pair=pair).filter(date=date)
+        if len(record)==0:
+            ohlc=OHLC(
+                pair=pair,is_train_data=is_train_data,
+                open=open,high=high,low=low,close=close,
+                date=date
             )
-
-            print(f"***new data***\n{chart}\n******")
-
-        ##取得したデータの保存
-        for _,c in (chart.iterrows()):
-            open=c["open"]
-            high=c["high"]
-            low=c["low"]
-            close=c["close"]
-            date=str(c["datetime"].date())
-            is_train_data=False
-
-            ###取得したデータのレコードが無ければ追加する
-            record=OHLC.objects.filter(pair=pair).filter(date=date)
-            if len(record)==0:
-                ohlc=OHLC(
-                    pair=pair,is_train_data=is_train_data,
-                    open=open,high=high,low=low,close=close,
-                    date=date
-                )
-                ohlc.save()
-            ##
+            ohlc.save()
         ##
+    ##
             
