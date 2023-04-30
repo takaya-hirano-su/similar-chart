@@ -44,7 +44,7 @@ class TradeTrainingView(TemplateView):
         user=CustomUser.objects.get(id=user_id)
         is_user_asset=True if not len(UserNetAsset.objects.filter(user=user,market=initial_market))==0 else False
         if not is_user_asset: #総資産情報がないときは初期化
-            init_net_asset(user=user,now=now,market=initial_market)
+            init_net_asset(user=user,now=now)
 
         net_asset=UserNetAsset.objects.filter(user=user,market=initial_market).order_by("date").last() #最新の情報を取得
         user_coin=UserCoin.objects.get(net_asset=net_asset,pair=initial_pair)
@@ -96,7 +96,7 @@ class TradeTrainingView(TemplateView):
         #資産情報の有無
         is_user_asset=True if not len(UserNetAsset.objects.filter(user=user,market=market))==0 else False
         if not is_user_asset: #情報が1つもないときは0で初期化
-            init_net_asset(user=user,now=now,market=market)
+            init_net_asset(user=user,now=now)
 
         #現在の資産情報の有無
         is_current=True if not len(UserNetAsset.objects.filter(user=user,date=now.date(),market=market))==0 else False
@@ -192,40 +192,43 @@ def init_update_quote(market:Market,pair:Pair,now:datetime):
         quote_db[0].bid=quote["bid"]
         quote_db[0].save() #古いデータを更新
 
-def init_net_asset(user:CustomUser,market:Market,now:datetime):
+def init_net_asset(user:CustomUser,now:datetime):
     """
     資産情報の初期化
 
     :param user: ユーザー情報
     :type user: CustomUser
-    :param market:選択中の取引所
     :param datetime now: 現在時刻
     """
-    #総資産情報の登録
-    net_asset=UserNetAsset(
-        user=user,
-        date=now.date(),
-        market=market
-    )
-    net_asset.save() 
 
-    #持ち仮想通貨情報の登録 (0コイン持ってるとして登録)
-    for pair in Pair.objects.all():
-        user_coin=UserCoin(
-            net_asset=net_asset,
-            pair=pair,
-            lot=0,
-        )
-        user_coin.save() 
+    for market in Market.objects.all():
 
-    #通貨(日本円とかUSドルとか)の登録
-    for currency in Currency.objects.all():
-        user_currency=UserCurrnecy(
-            net_asset=net_asset,
-            currency=currency,
-            price=0
+        #総資産情報の登録
+        net_asset=UserNetAsset(
+            user=user,
+            date=now.date(),
+            market=market
         )
-        user_currency.save() #現在の通貨情報(日本円とかUSドルとか)の登録
+        net_asset.save() 
+
+        #持ち仮想通貨情報の登録 (0コイン持ってるとして登録)
+        for pair in Pair.objects.filter(market=market):
+            user_coin=UserCoin(
+                net_asset=net_asset,
+                pair=pair,
+                lot=0,
+            )
+            user_coin.save() 
+
+        #通貨(日本円とかUSドルとか)の登録
+        currency_list=get_currency_list(market=market)
+        for currency in currency_list:
+            user_currency=UserCurrnecy(
+                net_asset=net_asset,
+                currency=currency,
+                price=0
+            )
+            user_currency.save() #現在の通貨情報(日本円とかUSドルとか)の登録
 
 def create_net_asset(user:CustomUser,market:Market,now:datetime):
     """
@@ -302,3 +305,21 @@ def action_sell(user_coin:UserCoin,user_currency:UserCurrnecy,bid:float,lot:floa
 
     user_coin.lot-=lot #売った分だけコインをマイナス
     user_coin.save()
+
+
+def get_currency_list(market:Market)->list:
+    """
+    取引所で扱ってる通貨リストの取得
+
+    :param market:選択中の取引所
+    :return currency_list: 扱っている通貨のリスト
+    """
+
+    currency_list=[]
+    for c in Currency.objects.all():
+        for p in Pair.objects.filter(market=market):
+            if c.currency.casefold() in p.pair.casefold():
+                currency_list.append(c)
+                break
+
+    return currency_list

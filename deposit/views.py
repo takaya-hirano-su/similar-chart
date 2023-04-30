@@ -9,7 +9,7 @@ from .forms import MarketCurrencyForm,DepositWithdrawForm,custom_valid
 from main.models import Market,Pair 
 from accounts.models import CustomUser
 from trade_training.models import UserNetAsset,Currency,UserCurrnecy,UserCoin,BidAsk
-from trade_training.views import init_net_asset,create_net_asset,init_update_quote
+from trade_training.views import init_net_asset,create_net_asset,init_update_quote,get_currency_list
 
 
 # Create your views here.
@@ -29,7 +29,7 @@ class DepositView(TemplateView):
         user=CustomUser.objects.get(id=user_id)
         is_user_asset=True if not len(UserNetAsset.objects.filter(user=user,market=initial_market))==0 else False
         if not is_user_asset: #総資産情報がないときは初期化
-            init_net_asset(user=user,now=now,market=initial_market)
+            init_net_asset(user=user,now=now)
 
         #現在の資産情報の有無
         is_current=True if not len(UserNetAsset.objects.filter(user=user,date=now.date(),market=initial_market))==0 else False
@@ -163,20 +163,3 @@ def withdraw(net_asset:UserNetAsset,currency:Currency,price:float):
     user_currency.price-=price
     user_currency.save()
     
-
-def get_currency_list(market:Market)->list:
-    """
-    取引所で扱ってる通貨リストの取得
-
-    :param market:選択中の取引所
-    :return currency_list: 扱っている通貨のリスト
-    """
-
-    currency_list=[]
-    for c in Currency.objects.all():
-        for p in Pair.objects.filter(market=market):
-            if c.currency.casefold() in p.pair.casefold():
-                currency_list.append(c)
-                break
-
-    return currency_list

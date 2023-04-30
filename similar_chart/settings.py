@@ -30,9 +30,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOST")]
+DEBUG = True
+ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOST"),"localhost","127.0.0.1","52.62.120.110"]
 
 
 # Application definition
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     "main", #メインの似ているチャートを表示する機能の登録,
     "trade_training", #取引練習機能の登録
     "deposit", #仮入出金機能の追加
@@ -56,6 +56,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     #--
+
+    "django_ses", #django_sesの登録
 ]
 
 MIDDLEWARE = [
@@ -135,7 +137,59 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT=os.path.join(BASE_DIR,"static/")
+# STATIC_ROOT=os.path.join(BASE_DIR,"static/")
+STATIC_ROOT='/usr/share/nginx/html/static'
+
+
+#--AMAZON SES関連
+AWS_SES_ACCESS_KEY_ID=os.environ.get("AWS_SES_ACCESS_KEY_ID")
+AWS_SES_SECRET_ACCESS_KEY_ID=os.environ.get("AWS_SES_SECRET_ACCESS_KEY_ID")
+EMAIL_BACKEND="django_ses.SESBackend"
+#--
+
+
+#--ログ関連
+LOGING={
+    "vesiron":1,
+    "disable_existing_loggers":False,
+
+    #ロガー
+    "loggers":{
+        "django":{
+            "handlers":["file"],
+            "level":"INFO",
+        },
+
+        "similar-chart":{
+            "handlers":["file"],
+            "level":"INFO",
+        }
+    },
+
+    #ハンドラ
+    "handlers":{
+        "file":{
+            "level":"INFO",
+            "class":"logging.handlers.TimedRotatingFileHandler",
+            "filename":os.path.join(BASE_DIR,"logs/django.log"),
+            "formatter":"prod",
+            "when":"D",
+            "interval":1,
+            "backupCount":7,
+        }
+    },
+
+    #フォーマッタ
+    "formatters":{
+        "prod":{
+            "format":'\t'.join([
+                '%(asctime)s','[%(levelname)s]','%(pathname)s(Line%(lineno)d)','%(message)s',
+            ])
+        }
+    }
+}
+
+#--
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

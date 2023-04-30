@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 param_path=str(Path(__file__).parent.parent.parent)
-root_path=str(Path(__file__).parent.parent.parent.parent)
+root_path=str(Path(__file__).parent.parent.parent.parent.parent)
 sys.path.append(param_path)
 sys.path.append(root_path)
 

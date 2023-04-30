@@ -12,8 +12,7 @@ from deposit.forms import MarketCurrencyForm
 from main.models import Market,Pair,OHLC
 from accounts.models import CustomUser
 from trade_training.models import UserNetAsset,Currency,UserCurrnecy,UserCoin,BidAsk
-from trade_training.views import init_net_asset,create_net_asset,init_update_quote
-from deposit.views import get_currency_list
+from trade_training.views import init_net_asset,create_net_asset,init_update_quote,get_currency_list
 
 # Create your views here.
 
@@ -33,7 +32,7 @@ class HomeView(TemplateView):
         user=CustomUser.objects.get(id=user_id)
         is_user_asset=True if not len(UserNetAsset.objects.filter(user=user,market=initial_market))==0 else False
         if not is_user_asset: #総資産情報がないときは初期化
-            init_net_asset(user=user,now=now,market=initial_market)
+            init_net_asset(user=user,now=now)
 
         #現在の資産情報の有無
         is_current=True if not len(UserNetAsset.objects.filter(user=user,date=now.date(),market=initial_market))==0 else False

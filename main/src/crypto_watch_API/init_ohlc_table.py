@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 ROOT_PATH=str(Path(__file__).parent.parent.parent.parent)
+print(ROOT_PATH)
 sys.path.append(ROOT_PATH)
 
 import psycopg2
