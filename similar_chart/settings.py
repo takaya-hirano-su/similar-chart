@@ -31,8 +31,8 @@ SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOST"),"localhost","127.0.0.1","52.62.120.110"]
-
+ALLOWED_HOSTS = allowed_hosts
+CSRF_TRUSTED_ORIGINS=csrf_trusted_origins
 
 # Application definition
 
@@ -142,8 +142,8 @@ STATIC_ROOT='/usr/share/nginx/html/static'
 
 
 #--AMAZON SES関連
-AWS_SES_ACCESS_KEY_ID=os.environ.get("AWS_SES_ACCESS_KEY_ID")
-AWS_SES_SECRET_ACCESS_KEY_ID=os.environ.get("AWS_SES_SECRET_ACCESS_KEY_ID")
+AWS_SES_ACCESS_KEY_ID=aws_ses_access_key_id
+AWS_SES_SECRET_ACCESS_KEY=aws_ses_secret_access_key
 EMAIL_BACKEND="django_ses.SESBackend"
 #--
 

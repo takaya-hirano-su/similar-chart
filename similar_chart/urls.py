@@ -22,7 +22,7 @@ from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("analysis/",include("main.urls"),name="main"),
+    path("",include("main.urls"),name="main"),
     path("accounts/",include("allauth.urls")),
     path("trade/",include("trade_training.urls"),name="trade"),
     path("deposit/",include("deposit.urls"),name="deposit"),
