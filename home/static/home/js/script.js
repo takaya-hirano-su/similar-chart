@@ -80,18 +80,11 @@ var pair_bar=new Chart(pair_bar_ctx,{
 
 console.log(chart_labels);
 
-var chart_labels_t=[];
-chart_labels.forEach(element => {
-    chart_labels_t.push(new Date(element));
-});
-
-console.log(chart_labels_t);
-
 const user_chart_ctx="user-chart";
 var user_chart=new Chart(user_chart_ctx,{
     type:"line",
     data:{
-        labels:chart_labels_t,
+        labels:chart_labels,
         datasets:[{
             data:user_chart_values,
             type:"line",

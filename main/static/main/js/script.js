@@ -39,11 +39,6 @@ function drawChart(ctx,canvas,labels,datasets,is_axes){
      * キャンバスにチャートを描画する関数
      */
 
-    var labels_t=[]; //文字列の時間をdate型の時間に変換
-    labels.forEach(element=>{
-        labels_t.push(new Date(element));
-    });
-
     if(canvas){
         ctx.destroy();
     }
@@ -88,7 +83,7 @@ function drawChart(ctx,canvas,labels,datasets,is_axes){
     var canvas=new Chart(ctx,{
         type:"line",
         data:{
-            labels:labels_t,
+            labels:labels,
             datasets:datasets,
         },
         options:{
@@ -145,10 +140,10 @@ function drawMainChart(target_chart,similar_chart){
     });
 
     //AIが選択した似ている過去チャートデータ
+    var dates=Object.values(similar_chart["No1"]["scaled"]["date"]);
     var similar_num=Object.keys(similar_chart).length; 
     for(var i=0; i<similar_num; i++){
         var values=Object.values(similar_chart["No"+String(i+1)]["scaled"]["close"]);
-        var dates=Object.values(similar_chart["No"+String(i+1)]["scaled"]["date"]);
         var alpha=0.5/(i+1);
 
         datasets.push({
