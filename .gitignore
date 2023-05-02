@@ -4,3 +4,4 @@ logs
 similar_chart/settings.py
 .amazon_ses
 __pycache__
+*.pptx

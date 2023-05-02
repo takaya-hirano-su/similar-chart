@@ -27,5 +27,6 @@ urlpatterns = [
     path("trade/",include("trade_training.urls"),name="trade"),
     path("deposit/",include("deposit.urls"),name="deposit"),
     path("home/",include("home.urls"),name="home"),
+    path("portfolio/",include("portfolio.urls"),name="portfolio"),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}), # 追加
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) # 追加

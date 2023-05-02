@@ -15,6 +15,10 @@ body{
     font-size: 16px; */
 }
 
+b{
+    font-weight:bold!important;
+    border-bottom: 1px solid #666666;
+}
 
 header{
     box-sizing: border-box;
@@ -44,10 +48,6 @@ nav{
     font-weight: bold;
 }
 
-ul{
-    display: flex;
-    padding-left: 50%;
-}
 
 h1{
     padding-left: 10px;
@@ -102,6 +102,7 @@ h3{
 .contents{
     padding-left: 50px;
     padding-right: 50px;
+    width: 100%;
 }
 
 

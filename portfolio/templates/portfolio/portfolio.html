@@ -1,0 +1,252 @@
+{% extends "main/base.html" %}
+{% load static %}
+
+{% block css-content %}
+<link rel="stylesheet" type="text/css" href="{% static 'main/css/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'portfolio/css/style.css' %}">
+{% endblock %}
+
+{% block main-content %}
+<h1>ポートフォリオ</h1>
+<div class="contents">
+<div class="portfolio">
+    <div class="chapter">
+        <h2>はじめに</h2>
+        <p>作成したWebアプリケーションについて、ポートフォリオとして紹介いたします。</p>
+        <div class="img">
+            <img src="{% static 'portfolio/imgs/chap0/0_1.png' %}">
+            <p>(作成したWebアプリ メイン画面)</p>
+        </div>
+        <p>おもな使用技術は、言語/フレームワークはpython/Django、本番環境はAWS(EC2,Amazon SES等)になります。</p>
+        <p>フレームワークとしてDjangoを選んだ理由は、pythonで学習させた機械学習モデルを容易に利用するためです。</p>
+    </div>
+
+    <div class="chapter">
+        <h2>自己紹介</h2>
+        <p>東北大学 大学院 工学研究科ロボティクス専攻 修士1年</p>
+        <p>pythonを用いた機械学習とロボット制御について研究中です。</p>
+    </div>
+
+    <div class="chapter">
+        <h2>作成したアプリについて</h2>
+        <p>まず作成したアプリについて以下の順で説明します。</p>
+        <ol>
+            <li><a href="/portfolio/#web-app-summary">Webアプリ概要</a></li>
+            <li><a href="/portfolio/#web-app-feature">アプリの特徴</a></li>
+            <li><a href="/portfolio/#web-app-feature-list">アプリの機能一覧</a></li>
+        </ol>
+
+        <div class="sub-chapter">
+            <h3 id="web-app-summary">Webアプリ概要</h3>
+
+            <div class="text-block">
+                <p>選択した仮想通貨のチャートと<b>似ている過去チャートを探し出すWebアプリケーション</b>です。</p>
+                <p>学習させた<b>AIモデルが似ているチャートを見つけだし</b>、ブラウザ上に表示します。</p>
+                <p>似ているチャートを見つけ出すので「Similar Chart Seacher」という名前にしました。</p>
+            </div>
+
+            <div class="text-block">
+                <p>私は学部生の頃から仮想通貨に興味があり、pythonを用いたデータ分析やスクレイピングを行っていました。</p>
+                <p>その際に、現在のチャートと似ている過去のチャートはないだろうか？</p>
+                <p>と思ったのがきっかけで、今回こちらのWebアプリを製作しました。</p>
+            </div>
+
+            <div class="text-block">
+                <p>仮想通貨の価格は、相対的な時系列の値動きによる影響が大きいと考えています。</p>
+                <p>過去の似た値動きを調べることができれば、今後の値動きをある程度予測することができるはずです。</p>
+                <p>しかし、私の調べた限りでは、<b>仮想通貨における過去とチャートと今のチャートの類似度が簡単にわかるWebアプリは見当たりません</b>でした。</p>
+                <p>また、私と同じ事を感じつつも、容易に利用できるアプリがないために困っている人がいるのではないかとも考えました。</p>
+                <p>そこで、<b>この機能を実装し、困りごとを解決したい</b>と思いアプリを製作しました。</p>
+            </div>
+
+            <div class="text-block">
+                <p>Webアプリ上部のナビゲーションバーから操作して頂けますと幸いです。</p>
+                <p>以下がサインイン用のテストアカウントになります。ご自由に操作していただければと思います。</p>
+                <table class="table">
+                    <tr>
+                        <th class="col-md-6 text-center">メールアドレス</th><th class="col-md-6  text-center">パスワード</th>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6  text-center">similar.chart.test.user@gmail.com</td><td class="col-md-6  text-center">TestUser1234</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="sub-chapter">
+            <h3 id="web-app-feature">アプリの特徴</h3>
+
+            <div class="sub-sub-chapter">
+                <h4>チャート分析</h4>
+                <p>こちらが<b>Webアプリのメイン機能</b>になります。</p>
+                <p>取引所・通貨ペア・日付を選択肢、ターゲットになるチャート情報を入力します。</p>
+                <p>入力が完了すると、学習済みの<b>AIモデルが似ている過去チャートを見つけ出し、ランキングとして表示</b>します。</p>
+                <p>また、<b>過去チャートがこの先にどのように値動きしたのか</b>も表示されるため、今後の値動き予測の手助けになります。</p>
+                <div class="img">
+                    <img src="{% static 'portfolio/imgs/chap2/subchap2/sub-sub-1-1.png' %}">
+                    <p>(検索結果の表示)</p>
+                </div>
+                <p>ランキングに上がった過去チャートについて、個別に値動きを確認することも可能です。</p>
+                <div class="img">
+                    <img src="{% static 'portfolio/imgs/chap2/subchap2/sub-sub-1-2.png' %}">
+                    <p>(ランキングに上がった過去チャートを個別に確認)</p>
+                </div>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>トレード練習</h4>
+                <p><b>分析結果を利用してトレードの練習を行うこと可能</b>です。</p>
+                <p>CryptoWatch (複数の取引所の情報を一括に扱っているサイト) のAPIを用いて、
+                    <b>リアルタイムで仮想通貨の売値と買値を取得</b>しています。</p>
+                <div class="img">
+                    <img src="{% static 'portfolio/imgs/chap2/subchap2/sub-sub-2-1.png' %}">
+                    <p>(仮想的なトレード)</p>
+                </div>
+                <p>分析だけでなく、結果を利用した<b>行動もしてもらいたいと思い実装</b>しました。</p>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>総資産の確認</h4>
+                <p>トレード練習における資産推移の確認ができます。</p>
+                <div class="img">
+                    <img src="{% static 'portfolio/imgs/chap2/subchap2/sub-sub-3-1.png' %}">
+                    <p>(資産推移グラフ)</p>
+                </div>
+                <p>ユーザーの時系列情報が可視化されるため、継続的な利用を促すことが可能です。</p>
+            </div>
+        </div>
+
+        <div class="sub-chapter">
+            <h3 id="web-app-feature-list">アプリ機能一覧</h3>
+
+            <div class="sub-sub-chapter">
+                <h4>主な機能</h4>
+                <table class="table">
+                    <tr>
+                        <th class="col-md-6 text-center">機能</th><th class="col-md-6  text-center">補足</th>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6  text-center">チャート分析</td>
+                        <td class="col-md-6  text-left">
+                            選択したチャートと似たチャートを分析します<br>
+                            以下の設定が行えます
+                            <ul class="text-left">
+                                <li>取引所</li>
+                                <li>通貨ペア</li>
+                                <li>日付</li>
+                                <li>過去何日分のチャートを見るか(参照日数)</li>
+                                <li>先何日後まで確認するか(予測日数)</li>
+                                <li>類似チャート数</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">トレード練習</td>
+                        <td class="col-md-6  text-left">
+                            現在の仮想通貨の売買値が確認できます<br>
+                            以下の設定が行えます
+                            <ul>
+                                <li>取引所</li>
+                                <li>通貨ペア</li>
+                                <li>売買の選択</li>
+                                <li>売買数量の指定</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">仮想的な入出金</td>
+                        <td class="col-md-6  text-left">
+                            トレード練習で用いるお金の入出金ができます<br>
+                            以下の設定が行えます
+                            <ul>
+                                <li>取引所</li>
+                                <li>通貨</li>
+                                <li>入出金の選択</li>
+                                <li>入出金量の指定</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">総資産の確認</td>
+                        <td class="col-md-6  text-left">
+                            トレード練習で得た資産の推移を確認します<br>
+                            以下の設定が行えます
+                            <ul>
+                                <li>取引所</li>
+                                <li>通貨</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>認証機能</h4>
+                <table class="table">
+                    <tr>
+                        <th class="col-md-6 text-center">機能</th><th class="col-md-6 text-center">補足</th>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">サインアップ・サインイン・サインアウト</td><td class="col-md-6  text-center">---</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">メールアドレス認証</td><td class="col-md-6  text-center">---</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">パスワードリセット</td><td class="col-md-6  text-center">---</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="chapter">
+        <h2>アプリに使用した技術について</h2>
+
+        <div class="sub-chapter">
+            <h3>使用技術</h3>
+
+            <div class="sub-sub-chapter">
+                <h4>フロントエンド</h4>
+                <ol>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>Bootstrap 5.0.0</li>
+                    <li>JavaScript</li>
+                    <li>Chart.js 2.9.3</li>
+                </ol>
+                <p>全体のデザインはできるだけシンプルになるように気を付けました。</p>
+                <p>Chart.jsを用いることで、グラフの描画に動きを加えています。</p>
+                <p>また、Chart.jsにおいて最新の3系ではなく2系を使っている理由は、日本語の文献が多かったためです。</p>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>バックエンド</h4>
+                <ol>
+                    <li>python</li>
+                    <li>Django 4.2</li>
+                    <li>pytorch 2.0.0</li>
+                    <li>PostgreSQL 14</li>
+                </ol>
+                <p>言語とフレームワークとしてpython/Djangoを選んだ理由は、pythonでAIモデルを学習させ、スムーズにWebアプリに組み込むためです。</p>
+                <p>機械学習ライブラリとしてpytorchを使用しています。研究でも使用しており、使い慣れているためこちらのライブラリを使用しました。</p>
+                <p>仮想通貨の価格データは大きくなることが予想されるため、Djangoに標準で搭載されているSQLite3ではなく、PostgreSQLをデータベースとして使用しました。</p>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>インフラ</h4>
+                <ol>
+                    <li>AWS</li>
+                    <li>nginx</li>
+                    <li>gunicorn</li>
+                </ol>
+                <p>クラウドサービスとして30%以上のシェアであり
+                    <a href="https://www.publickey1.jp/blog/23/aws30azuregoogle_cloud20224synergy_researchcanalys.html">[参考]</a>
+                    広く使われているため、AWSを本番環境に選択しました。</p>
+                <p>Djangoを用いたAPサーバーとWebサーバーを容易に繋ぐことができるため、nginxとgunicornを使用しました。</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

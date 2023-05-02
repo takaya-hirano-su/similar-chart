@@ -45,11 +45,11 @@ var pair_bar=new Chart(pair_bar_ctx,{
             {
                 label:label_crypto,
                 data:[crypto_price],
-                backgroundColor:getColor(0,1),
+                backgroundColor:getColor(1,1),
             },{
                 label:label_currency,
                 data:[currency],
-                backgroundColor:getColor(1,1),
+                backgroundColor:getColor(0,1),
             }
         ]
     },
