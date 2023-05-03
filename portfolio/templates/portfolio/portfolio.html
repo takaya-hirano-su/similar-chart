@@ -6,6 +6,24 @@
 <link rel="stylesheet" type="text/css" href="{% static 'portfolio/css/style.css' %}">
 {% endblock %}
 
+{% block js-head %}
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" }},
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    },
+    "HTML-CSS": { matchFontHeight: false },
+    displayAlign: "left",
+    displayIndent: "2em"
+  });
+</script>
+{% endblock %}
+
 {% block main-content %}
 <h1>ポートフォリオ</h1>
 <div class="contents">
@@ -206,10 +224,16 @@
     <!-- chpater3 -->
     <div class="chapter">
         <h2>アプリに使用した技術について</h2>
+        <p>使用した技術について以下の順で説明します。</p>
+        <ul>
+            <li><a href="/portfolio/#web-app-tool">使用技術</a></li>
+            <li><a href="/portfolio/#web-app-db">DB設計</a></li>
+            <li><a href="/portfolio/#web-app-model">AIモデル</a></li>
+        </ul>
 
         <!-- chap3.1 -->
         <div class="sub-chapter">
-            <h3>使用技術</h3>
+            <h3 id="web-app-tool">使用技術</h3>
 
             <div class="sub-sub-chapter">
                 <h4>フロントエンド</h4>
@@ -263,14 +287,14 @@
 
         <!-- chap3.2 -->
         <div class="sub-chapter">
-            <h3>DB設計</h3>
+            <h3 id="web-app-db">DB設計</h3>
 
             <div class="sub-sub-chapter">
                 <h4>ER図</h4>
                 <p>データベースのER図は以下の通りです。</p>
                 <p>緑がユーザー関連、青が仮想通貨の取引所関連となっています。</p>
                 <div class="img">
-                    <img src="{% static 'portfolio/imgs/chap3/subchap2/similar-chart-ER.drawio.png' %}">
+                    <img src="{% static 'portfolio/imgs/chap3/subchap2/similar-chart-ER.drawio.png' %}" style="--img-scale:70%">
                 </div>
             </div>
 
@@ -309,6 +333,95 @@
                         <td class="col-md-6 text-center">UserCurrency</td><td class="col-md-6  text-center">ある日付においてユーザーが持つ通貨量</td>
                     </tr>
                 </table>
+            </div>
+        </div>
+
+        <!-- chap3.3 -->
+        <div class="sub-chapter">
+            <h3 id="web-app-model">AIモデルについて</h3>
+            <p>使用したモデルは、リカレントニューラルネットワークを使ったオートエンコーダを使用しました。</p>
+            <p>こちらのモデルを使用した理由は、<b>時系列データの特徴量を抽出し比較することで、似たチャートを見つけるため</b>です。</p>
+
+            <div class="sub-sub-chapter">
+                <h4>モデルの学習</h4>
+                <p>モデル内の処理フローは以下です。</p>
+                <ol>
+                    <li>1. 仮想通貨の時系列価格データ$x$をEncoderモデルで特徴量$h$に変換</li>
+                    <li>2. 特徴量$h$をDecoderモデルとNNに通し,出力$x'$を得る</li>
+                    <li>3. 元の価格データ$x$とDecoder出力$x'$の誤差が小さくなるようにパラメータを学習</li>
+                </ol>
+                <div class="img">
+                    <img src="{% static 'portfolio/imgs/chap3/subchap3/AutoEncoder.drawio.png' %}" style="--img-scale: 60%">
+                    <p>(AIモデル処理フロー (添え字は時間成分))</p>
+                </div>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>モデルの運用</h4>
+                <p>似たチャートを見つける際には以下の手順を行っています。</p>
+                <ol>
+                    <li>1. ターゲットの時系列データ$x_{target}$を学習済みのEncoderに入力し、特徴量$h_{target}$を得る</li>
+                    <li>2. データベースから学習時に使った時系列データ$x_{all}$を全て取り出し、これもEncoderに通して特徴量$h_{all}$を得る</li>
+                    <li>3. $h_{target}$と$h_{all}$の平均二乗誤差を計算し、誤差が小さい方から$N$個分描画する</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- chapter4 -->
+    <div class="chapter">
+        <h2>作成理由について</h2>
+        <p>次に、ポートフォリオ、Webアプリを作った目的や理由についてです。</p>
+        <ul>
+            <li><a href="/portfolio/#why-portfolio-made">ポートフォリオを作成した理由</a></li>
+            <li><a href="/portfolio/#why-app-made">このようなWebアプリを作成した理由</a></li>
+        </ul>
+
+        <!-- chap4.1 -->
+        <div class="sub-chapter">
+            <h3 id="why-portfolio-made">ポートフォリオを作成した理由</h3>
+
+            <div class="sub-sub-chapter">
+                <h4>1. 就活時に必要と考えたため</h4>
+                <p>Web系の企業様ではポートフォリオを必要とされていることが多く、私としても必要と感じました。</p>
+                <p>また、私は工学系の学科に在籍しているため、情報系の方々に遅れを取らないためにも必要性を大きく感じました。</p>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>2. 使用した技術を自分の中で体系化するため</h4>
+                <p>自分の行ったことを<b>テキスト化し、他の方に理解してもらえるようにアウトプットすることが、学習する上で最も重要</b>と考えています。</p>
+                <p>学部時代に取り組んだ卒業論文において、結果を出すだけでは自分の中で知識がまとまり切っておらず不十分でした。</p>
+                <p>自分が行ったこと・行った理由等を人に伝わるように論文としてアウトプットして初めて、真に自分の身についたと感じています。</p>
+                <p>こちらのWebアプリも、作りっぱなしにせずアウトプットすることで、<b>使用した技術を自分の中で体系化し次に活かしたい</b>と考えました。</p>
+            </div>
+        </div>
+
+        <!-- chap4.2 -->
+        <div class="sub-chapter">
+            <h3 id="why-app-made">こちらのWebアプリを作成した理由</h3>
+
+            <div class="sub-sub-chapter">
+                <h4>実際に手を動かして開発技術を学ぶため</h4>
+                <p>Webアプリを実際に作成し、<b>教科書を読むだけでは気づかない開発技術を学ぶため</b>です。</p>
+                <p>基本情報技術者試験の資格を取得した際に、システム開発の流れやER図、暗号化手法等を知識として勉強しました。</p>
+                <p>しかし、知識だけでは開発はできないと感じ、Webアプリの製作を開始しました。</p>
+                <p>製作を通して<b>最も学びとなったのは、要件定義の重要性について</b>です。</p>
+                <p>初期段階では、サインイン機能やトレード練習機能について考えていませんでした。</p>
+                <p>途中になって、これらの機能の必要性を感じ、急遽DBやプログラムを変更しなければなりませんでした。</p>
+                <p>DBを変更する時間がかかったり、変更したことでバグが発生したりと、本来の開発とは関係のない部分で多くの時間を取られてしまいました。</p>
+                <p>こうした<b>不十分な要件定義が非効率な作業を発生させることを、教科書から体感することはできなかった</b>と思います。</p>
+                <p>要件定義は一例であり、書籍に載っていないことを調べる大切さや、クラウドサービスとのやり取り(Amazon SESのサンドボックスが解除されず何度もやり取りを行いました...)等<b>開発しなければ得られなかった経験をすることができました。</b></p>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>AI技術を社会環境で活用したいと考えたため</h4>
+                <p>研究分野だけでなく、<b>社会環境でAIを活用し有益なサービスを作りたいと考えたため</b>です。</p>
+                <p>私は研究において、スパイキングニューラルネットワーク (以下SNN)という少し特殊なニューラルネットワークを使用して、画像の特徴抽出やロボット制御を行っています。</p>
+                <p>SNNは専用のプロセッサを用いなければ効力を発揮しずらく、また、その専用プロセッサは一般に入手することはできません。</p>
+                <p>そのため、私の研究を社会で活用するのは難しいです。</p>
+                <!-- <p><b>AIの有用性は</b>研究を通して、また、ChatGPT等のAIサービスを通して<b>如実に感じています。</b></p> -->
+                <p>しかし、<b>AIの有用性は研究を通して常々感じており</b>、ChatGPT等のAIサービスを<b>享受するだけでなく、自ら提供することで誰かの役に立ちたい</b>とも考えていました。</p>
+                <p>そこで、研究とは直接関係なくとも、大学での研究活動で培った<b>AI技術をWebアプリに搭載し、困っている人を手助けできるアプリの開発を目指しました。</b></p>
             </div>
         </div>
     </div>
