@@ -10,6 +10,7 @@
 <h1>ポートフォリオ</h1>
 <div class="contents">
 <div class="portfolio">
+    <!-- chapter0 -->
     <div class="chapter">
         <h2>はじめに</h2>
         <p>作成したWebアプリケーションについて、ポートフォリオとして紹介いたします。</p>
@@ -21,12 +22,14 @@
         <p>フレームワークとしてDjangoを選んだ理由は、pythonで学習させた機械学習モデルを容易に利用するためです。</p>
     </div>
 
+    <!-- chapter1 -->
     <div class="chapter">
         <h2>自己紹介</h2>
         <p>東北大学 大学院 工学研究科ロボティクス専攻 修士1年</p>
         <p>pythonを用いた機械学習とロボット制御について研究中です。</p>
     </div>
 
+    <!-- chapter2 -->
     <div class="chapter">
         <h2>作成したアプリについて</h2>
         <p>まず作成したアプリについて以下の順で説明します。</p>
@@ -200,9 +203,11 @@
         </div>
     </div>
 
+    <!-- chpater3 -->
     <div class="chapter">
         <h2>アプリに使用した技術について</h2>
 
+        <!-- chap3.1 -->
         <div class="sub-chapter">
             <h3>使用技術</h3>
 
@@ -244,6 +249,66 @@
                     <a href="https://www.publickey1.jp/blog/23/aws30azuregoogle_cloud20224synergy_researchcanalys.html">[参考]</a>
                     広く使われているため、AWSを本番環境に選択しました。</p>
                 <p>Djangoを用いたAPサーバーとWebサーバーを容易に繋ぐことができるため、nginxとgunicornを使用しました。</p>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>API</h4>
+                <ol>
+                    <li>CryptoWatch</li>
+                </ol>
+                <p>仮想通貨の価格データの取得にCryptoWatch<a href="https://docs.cryptowat.ch/rest-api/">[公式サイト]</a>のAPIを利用しています。</p>
+                <p>こちらのAPIを利用したのは、複数の取引所のデータを一括で取得できるためです。</p>
+            </div>
+        </div>
+
+        <!-- chap3.2 -->
+        <div class="sub-chapter">
+            <h3>DB設計</h3>
+
+            <div class="sub-sub-chapter">
+                <h4>ER図</h4>
+                <p>データベースのER図は以下の通りです。</p>
+                <p>緑がユーザー関連、青が仮想通貨の取引所関連となっています。</p>
+                <div class="img">
+                    <img src="{% static 'portfolio/imgs/chap3/subchap2/similar-chart-ER.drawio.png' %}">
+                </div>
+            </div>
+
+            <div class="sub-sub-chapter">
+                <h4>各テーブルについて</h4>
+                <p>以下は各テーブルの簡単な説明です。</p>
+                <table class="table">
+                    <tr>
+                        <th class="col-md-6 text-center">テーブル名</th><th class="col-md-6 text-center">説明</th>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">Market</td><td class="col-md-6  text-center">取り扱う仮想通貨の取引所</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">Pair</td><td class="col-md-6  text-center">取引所が扱う通貨ペア</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">BidAsk</td><td class="col-md-6  text-center">現在の各通貨ペアの売買値</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">OHLC</td><td class="col-md-6  text-center">各通貨ペアにおける過去の価格情報</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">Currency</td><td class="col-md-6  text-center">通貨名と通貨記号</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">CustomUser</td><td class="col-md-6  text-center">ユーザー情報</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">UserNetAsset</td><td class="col-md-6  text-center">ユーザー資産の時系列情報</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">UserCoin</td><td class="col-md-6  text-center">ある日付においてユーザーが持つ仮想通貨数</td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-6 text-center">UserCurrency</td><td class="col-md-6  text-center">ある日付においてユーザーが持つ通貨量</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
