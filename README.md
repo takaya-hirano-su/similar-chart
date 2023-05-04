@@ -2,6 +2,7 @@
 
 webアプリ、ポートフォリオのリンクは以下になります。
 
+|||
 :---:|:---:
 |Webアプリ|https://similar-chart.code-labo.net/|
 |ポートフォリオ|https://similar-chart.code-labo.net/portfolio/|
