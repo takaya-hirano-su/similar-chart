@@ -11,18 +11,6 @@
 <script type="text/javascript"
   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    TeX: { equationNumbers: { autoNumber: "AMS" }},
-    tex2jax: {
-      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-      processEscapes: true
-    },
-    "HTML-CSS": { matchFontHeight: false },
-    displayAlign: "left",
-    displayIndent: "2em"
-  });
-</script>
 {% endblock %}
 
 {% block main-content %}
@@ -351,9 +339,9 @@
                 <h4>モデルの学習</h4>
                 <p>モデル内の処理フローは以下です。</p>
                 <ol>
-                    <li>1. 仮想通貨の時系列価格データ$x$をEncoderモデルで特徴量$h$に変換</li>
-                    <li>2. 特徴量$h$をDecoderモデルとNNに通し,出力$x'$を得る</li>
-                    <li>3. 元の価格データ$x$とDecoder出力$x'$の誤差が小さくなるようにパラメータを学習</li>
+                    <li>1. 仮想通貨の時系列価格データ\(x\)をEncoderモデルで特徴量\h\に変換</li>
+                    <li>2. 特徴量\(h\)をDecoderモデルとNNに通し,出力\(x'\)を得る</li>
+                    <li>3. 元の価格データ\(x\)とDecoder出力\(x'\)の誤差が小さくなるようにパラメータを学習</li>
                 </ol>
                 <div class="img">
                     <img src="{% static 'portfolio/imgs/chap3/subchap3/AutoEncoder.drawio.png' %}" style="--img-scale: 60%">
@@ -365,9 +353,9 @@
                 <h4>モデルの運用</h4>
                 <p>似たチャートを見つける際には以下の手順を行っています。</p>
                 <ol>
-                    <li>1. ターゲットの時系列データ$x_{target}$を学習済みのEncoderに入力し、特徴量$h_{target}$を得る</li>
-                    <li>2. データベースから学習時に使った時系列データ$x_{all}$を全て取り出し、これもEncoderに通して特徴量$h_{all}$を得る</li>
-                    <li>3. $h_{target}$と$h_{all}$の平均二乗誤差を計算し、誤差が小さい方から$N$個分描画する</li>
+                    <li>1. ターゲットの時系列データ\(x_{target}\)を学習済みのEncoderに入力し、特徴量\(h_{target}\)を得る</li>
+                    <li>2. データベースから学習時に使った時系列データ\(x_{all}\)を全て取り出し、これもEncoderに通して特徴量\(h_{all}\)を得る</li>
+                    <li>3. \(h_{target}\)と\(h_{all}\)の平均二乗誤差を計算し、誤差が小さい方から\(N\)個分描画する</li>
                 </ol>
             </div>
         </div>
