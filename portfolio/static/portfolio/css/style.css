@@ -8,6 +8,13 @@
     border-radius: 6px;
 }
 
+#contents-table{
+    margin: 15px;
+    padding-top: 50px;
+    padding-bottom: 10px;
+    font-size: large;
+}
+
 .chapter{
     padding-bottom: 50px;
 }
