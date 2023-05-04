@@ -2,11 +2,9 @@
 
 webアプリ、ポートフォリオのリンクは以下になります。
 
-|||
 :---:|:---:
 |Webアプリ|https://similar-chart.code-labo.net/|
 |ポートフォリオ|https://similar-chart.code-labo.net/portfolio/|
-|||
 
 また、一部Webアプリの機能にはアカウントが必要です。
 以下のテストアカウントでサインインできますので、操作していただけると幸いです。
@@ -14,7 +12,6 @@ webアプリ、ポートフォリオのリンクは以下になります。
 |メールアドレス|パスワード|
 :---:|:---:
 |similar.chart.test.user@gmail.com|TestUser1234|
-|||
 
 
 ## Webアプリについて
