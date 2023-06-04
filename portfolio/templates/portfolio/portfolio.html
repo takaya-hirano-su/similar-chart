@@ -8,8 +8,8 @@
 
 {% block js-head %}
 <!-- html内でtex形式の数式を使うため -->
-<script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 {% endblock %}
 
@@ -339,7 +339,7 @@
                 <h4>モデルの学習</h4>
                 <p>モデル内の処理フローは以下です。</p>
                 <ol>
-                    <li>1. 仮想通貨の時系列価格データ\(x\)をEncoderモデルで特徴量\h\に変換</li>
+                    <li>1. 仮想通貨の時系列価格データ\(x\)をEncoderモデルで特徴量\(h\)に変換</li>
                     <li>2. 特徴量\(h\)をDecoderモデルとNNに通し,出力\(x'\)を得る</li>
                     <li>3. 元の価格データ\(x\)とDecoder出力\(x'\)の誤差が小さくなるようにパラメータを学習</li>
                 </ol>
